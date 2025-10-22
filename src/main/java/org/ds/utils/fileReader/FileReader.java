@@ -1,7 +1,5 @@
-package org.ds.utils;
+package org.ds.utils.fileReader;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.ds.Main;
 import org.ds.exceptions.FileReadException;
 import org.jetbrains.annotations.NotNull;
