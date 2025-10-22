@@ -2,16 +2,18 @@ package org.ds.service.message;
 
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Message;
-import com.pengrad.telegrambot.model.request.ChatAction;
-import com.pengrad.telegrambot.model.request.ParseMode;
+import com.pengrad.telegrambot.model.request.*;
 import com.pengrad.telegrambot.request.SendChatAction;
 import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.response.SendResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.ds.bot.inlineKeyboard.KeyboardButton;
 import org.ds.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
 
 @Service
 public class MessageSenderService {
@@ -22,6 +24,11 @@ public class MessageSenderService {
         this.telegramBot = telegramBot;
     }
 
+    /**
+     * Sends text message into chat
+     * @param chatId current chat id
+     * @param message message to send
+     */
     public void sendMessage(@NotNull Long chatId, @NotNull String message) {
         SendMessage request = new SendMessage(chatId, message)
                 .parseMode(ParseMode.HTML);
@@ -40,10 +47,30 @@ public class MessageSenderService {
 
     }
 
+    /**
+     * Sends chat action like typing, sending photo, ets.
+     * @param chatId current chat id
+     * @param chatAction action to send
+     */
     public void sendChatAction(@NotNull Long chatId, @NotNull ChatAction chatAction) {
         SendChatAction sendChatAction = new SendChatAction(chatId, chatAction);
         telegramBot.execute(sendChatAction);
 
         log.info("Sent chat action %s into chat %d".formatted(chatAction.name(), chatId));
+    }
+
+    public void sendButtonsMessage(@NotNull Long chatId,
+                                   @NotNull String message,
+                                   KeyboardButton[] keyboardButtons) {
+        InlineKeyboardMarkup keyboardMarkup = new InlineKeyboardMarkup();
+
+        InlineKeyboardButton[] inlineKeyboardButtons = Arrays.stream(keyboardButtons).map(keyboardButton -> new InlineKeyboardButton(keyboardButton.text())
+                .callbackData(keyboardButton.callback())).toArray(InlineKeyboardButton[]::new);
+        keyboardMarkup.addRow(inlineKeyboardButtons);
+
+        SendMessage sendMessage = new SendMessage(chatId, message)
+                .replyMarkup(keyboardMarkup);
+
+        telegramBot.execute(sendMessage);
     }
 }
