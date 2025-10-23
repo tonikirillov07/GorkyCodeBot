@@ -1,7 +1,9 @@
 package org.ds.bot.preparingSteps;
 
+import org.ds.exceptions.InterestsListIsEmpty;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 
@@ -28,7 +30,44 @@ public class UserPlacesData {
     }
 
     public boolean isCompleted() {
-        return ((getInterests() != null) && (getInterests().length != 0)) && (getFreeTime() != null) && (getGeoposition() != null);
+        return ((getInterests() != null) && (getInterests().length != 0))
+                && (getFreeTime() != null)
+                && (getGeoposition() != null);
+    }
+
+    public @Nullable String getNotCompletedData() {
+        if (isCompleted())
+            return null;
+
+        String result = "";
+
+        if (hasNotInterests())
+            result += "интересы, ";
+
+        if (getFreeTime() == null)
+            result += "свободное время, ";
+
+        if (getGeoposition() == null)
+            result += "местоположение";
+
+        return result;
+    }
+
+    public @NotNull String getInterestsAsString() {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        if (hasNotInterests())
+            throw new InterestsListIsEmpty();
+
+        for (int i = 0; i < interests.length; i++) {
+            stringBuilder.append(interests[i]).append(i == interests.length - 1 ? "" : ", ");
+        }
+
+        return stringBuilder.toString();
+    }
+
+    private boolean hasNotInterests() {
+        return (interests == null) || (interests.length <= 0);
     }
 
     public String[] getInterests() {
