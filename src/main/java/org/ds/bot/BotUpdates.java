@@ -5,6 +5,7 @@ import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import org.ds.bot.commands.CommandData;
 import org.ds.bot.commands.CommandsProcessor;
+import org.ds.bot.preparingSteps.PreparingSteps;
 import org.ds.bot.states.States;
 import org.ds.service.BotStateService;
 import org.ds.service.message.KeyboardButtonsCallbacksService;
@@ -45,10 +46,10 @@ public class BotUpdates implements UpdatesListener {
         String messageText = message.text();
         String username = Utils.getUsername(message.from());
 
-        if (processCommands(chatId, messageText, username))
+        if ((messageText != null) && processCommands(chatId, messageText, username))
             return;
 
-        preparingSteps.prepare(chatId, messageText);
+        preparingSteps.prepare(chatId, message);
     }
 
     private boolean processCommands(@NotNull Long chatId,
