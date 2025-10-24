@@ -27,9 +27,9 @@ public class FreeTimeStep {
         this.responseProcessor = responseProcessor;
     }
 
-    public boolean processFreeTime(@NotNull Long chatId,
-                                   @NotNull String messageText,
-                                   @NotNull UserPlacesData userPlacesData) {
+    public boolean tryProcessFreeTime(@NotNull Long chatId,
+                                      @NotNull String messageText,
+                                      @NotNull UserPlacesData userPlacesData) {
         if (botStateService.getCurrentState() != States.REQUIRES_FREE_TIME)
             return false;
 

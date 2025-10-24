@@ -9,7 +9,10 @@ import org.ds.bot.preparingSteps.PreparingSteps;
 import org.ds.bot.states.States;
 import org.ds.service.BotStateService;
 import org.ds.service.message.KeyboardButtonsCallbacksService;
+import org.ds.service.message.MessageSenderService;
 import org.ds.utils.Utils;
+import org.ds.utils.fileReader.FileReader;
+import org.ds.utils.fileReader.files.TextFiles;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -26,6 +29,8 @@ public class BotUpdates implements UpdatesListener {
     private BotStateService botStateService;
     @Autowired
     private PreparingSteps preparingSteps;
+    @Autowired
+    private MessageSenderService messageSenderService;
 
     @Override
     public int process(@NotNull List<Update> list) {
@@ -49,12 +54,13 @@ public class BotUpdates implements UpdatesListener {
         if ((messageText != null) && processCommands(chatId, messageText, username))
             return;
 
-        preparingSteps.prepare(chatId, message);
+        if (preparingSteps.tryPrepare(chatId, message))
+            return;
+
+        messageSenderService.sendTextMessage(chatId, FileReader.read(TextFiles.NO_COMMANDS_EXECUTING_TEXT));
     }
 
-    private boolean processCommands(@NotNull Long chatId,
-                                 @NotNull String messageText,
-                                 @NotNull String username) {
+    private boolean processCommands(@NotNull Long chatId, @NotNull String messageText, @NotNull String username) {
         if (botStateService.getCurrentState() == States.EXECUTING_COMMAND)
             return false;
 

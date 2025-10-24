@@ -27,9 +27,9 @@ public class InterestsStep {
         this.responseProcessor = responseProcessor;
     }
 
-    public boolean processInterests(@NotNull Long chatId,
-                                    @NotNull String messageText,
-                                    @NotNull UserPlacesData userPlacesData) {
+    public boolean tryProcessInterests(@NotNull Long chatId,
+                                       @NotNull String messageText,
+                                       @NotNull UserPlacesData userPlacesData) {
         if (botStateService.getCurrentState() != States.REQUIRES_INTERESTS)
             return false;
 

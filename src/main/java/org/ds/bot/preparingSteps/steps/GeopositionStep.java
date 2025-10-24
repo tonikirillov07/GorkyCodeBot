@@ -31,9 +31,9 @@ public class GeopositionStep {
         this.responseProcessor = responseProcessor;
     }
 
-    public boolean processGeoposition(@NotNull Long chatId,
-                                      @NotNull Message message,
-                                      @NotNull UserPlacesData userPlacesData) {
+    public boolean tryProcessGeoposition(@NotNull Long chatId,
+                                         @NotNull Message message,
+                                         @NotNull UserPlacesData userPlacesData) {
         log.info("Processing geoposition...");
 
         if (botStateService.getCurrentState() != States.REQUIRES_GEOPOSITION)

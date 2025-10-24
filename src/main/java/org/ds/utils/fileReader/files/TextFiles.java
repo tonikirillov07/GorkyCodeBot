@@ -28,4 +28,5 @@ public final class TextFiles {
     public static final String COMMAND_CONFIRMATION_TEXT = COMMANDS_DIRECTORY + "/commandConfirmation.txt";
     public static final String COMMAND_NOT_FOUND_TEXT = COMMANDS_DIRECTORY + "/commandNotFound.txt";
     public static final String COMMAND_CANCELED_TEXT = COMMANDS_DIRECTORY + "/commandExecutionCanceled.txt";
+    public static final String NO_COMMANDS_EXECUTING_TEXT = COMMANDS_DIRECTORY + "/noCommandsExecuting.txt";
 }

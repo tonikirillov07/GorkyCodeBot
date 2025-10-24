@@ -1,6 +1,5 @@
 package org.ds.bot.preparingSteps;
 
-import com.google.gson.*;
 import com.pengrad.telegrambot.model.Message;
 import org.ds.bot.preparingSteps.steps.FinishStep;
 import org.ds.bot.preparingSteps.steps.FreeTimeStep;
@@ -27,16 +26,21 @@ public class PreparingSteps {
         this.userPlacesData = new UserPlacesData();
     }
 
-    public void prepare(@NotNull Long chatId, @NotNull Message message) {
+    public boolean tryPrepare(@NotNull Long chatId, @NotNull Message message) {
         String messageText = message.text();
 
-        if (interestsStep.processInterests(chatId, messageText, userPlacesData))
-            return;
+        if (interestsStep.tryProcessInterests(chatId, messageText, userPlacesData))
+            return true;
 
-        if (freeTimeStep.processFreeTime(chatId, messageText, userPlacesData))
-            return;
+        if (freeTimeStep.tryProcessFreeTime(chatId, messageText, userPlacesData))
+            return true;
 
-        if (geopositionStep.processGeoposition(chatId, message, userPlacesData))
+        if (geopositionStep.tryProcessGeoposition(chatId, message, userPlacesData)) {
             finishStep.processFinish(chatId, userPlacesData);
+
+            return true;
+        }
+
+        return false;
     }
 }
