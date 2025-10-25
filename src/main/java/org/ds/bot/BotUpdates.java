@@ -1,7 +1,6 @@
 package org.ds.bot;
 
 import com.pengrad.telegrambot.UpdatesListener;
-import com.pengrad.telegrambot.model.ChatMember;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import org.apache.commons.logging.Log;
@@ -20,7 +19,6 @@ import org.ds.utils.fileReader.FileReader;
 import org.ds.utils.fileReader.files.TextFiles;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -71,7 +69,8 @@ public class BotUpdates implements UpdatesListener {
         if (messageText != null)
             log.info("User %s sent message: %s".formatted(username, messageText));
 
-        if ((messageText != null) && processCommands(chatId, messageText, username, userId))
+        boolean isCommand = (messageText != null) && tryProcessCommands(chatId, messageText, username, userId);
+        if (isCommand)
             return;
 
         if (preparingSteps.tryPrepare(chatId, message))
@@ -80,7 +79,10 @@ public class BotUpdates implements UpdatesListener {
         messageSenderService.sendTextMessage(chatId, FileReader.read(TextFiles.NO_COMMANDS_EXECUTING_TEXT));
     }
 
-    private boolean processCommands(@NotNull Long chatId, @NotNull String messageText, @NotNull String username, @NotNull Long userId) {
+    private boolean tryProcessCommands(@NotNull Long chatId,
+                                       @NotNull String messageText,
+                                       @NotNull String username,
+                                       @NotNull Long userId) {
         if (botStateService.getCurrentState() == States.EXECUTING_COMMAND)
             return false;
 

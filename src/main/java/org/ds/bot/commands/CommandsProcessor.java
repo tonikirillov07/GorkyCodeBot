@@ -9,11 +9,9 @@ import org.ds.service.message.KeyboardButtonsCallbacksService;
 import org.ds.service.message.MessageSenderService;
 import org.ds.utils.fileReader.FileReader;
 import org.ds.utils.Utils;
-import org.ds.utils.fileReader.files.PhotoFiles;
 import org.ds.utils.fileReader.files.TextFiles;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.function.Consumer;
@@ -24,9 +22,7 @@ public class CommandsProcessor {
     private final KeyboardButtonsCallbacksService keyboardButtonsCallbacksService;
     private final BotStateService botStateService;
 
-    @Autowired
     private StartCommand startCommand;
-    @Autowired
     private ClearCommand clearCommand;
 
     public CommandsProcessor(MessageSenderService messageSenderService,
@@ -41,8 +37,9 @@ public class CommandsProcessor {
         if (!Utils.isMessageCommand(commandData.command()))
             throw new IllegalArgumentException("Message %s isn't command".formatted(commandData.command()));
 
-        if ((botStateService.getCurrentState() != States.NONE) && !commandData.isIgnoreInterruptConfirmation()) {
-            confirmInterrupt(commandData);
+        if (botStateService.getCurrentState() != States.NONE) {
+            if (!commandData.isIgnoreInterruptConfirmation())
+                confirmInterrupt(commandData);
             return;
         }
 
@@ -77,5 +74,15 @@ public class CommandsProcessor {
     private void commandNotFound(@NotNull Long chatId) {
         messageSenderService.sendTextMessage(chatId, FileReader.read(TextFiles.COMMAND_NOT_FOUND_TEXT));
         botStateService.changeCurrentState(States.NONE);
+    }
+
+    @Autowired
+    public void setStartCommand(StartCommand startCommand) {
+        this.startCommand = startCommand;
+    }
+
+    @Autowired
+    public void setClearCommand(ClearCommand clearCommand) {
+        this.clearCommand = clearCommand;
     }
 }

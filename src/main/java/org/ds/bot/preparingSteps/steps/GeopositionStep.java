@@ -61,7 +61,7 @@ public class GeopositionStep {
                     },
                     description -> {
                         messageSenderService.sendTextMessage(chatId, description);
-                        returnValue.set(true);
+                        returnValue.set(false);
 
                         botStateService.changeCurrentState(States.REQUIRES_GEOPOSITION);
                     }

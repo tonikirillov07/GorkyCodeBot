@@ -45,6 +45,7 @@ public class DBService {
             userToUpdate.setUserId(user.getUserId());
             userToUpdate.setUsingFirstTime(user.getUsingFirstTime());
             userToUpdate.setLastUsingTime(user.getLastUsingTime());
+            userToUpdate.setGotResult(user.getGotResult());
         });
     }
 

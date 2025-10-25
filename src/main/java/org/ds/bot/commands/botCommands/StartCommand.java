@@ -38,7 +38,7 @@ public class StartCommand extends AbstractCommand {
         UserRegistrationResponse userRegistrationResponse = checkUserRegistration(commandData.userId());
 
         if (!userRegistrationResponse.usingFirstTime() && userRegistrationResponse.isGotResult())
-            messageSenderService().sendTextMessage(commandData.chatId(), FileReader.read(TextFiles.WELCOME_2_TEXT));
+        messageSenderService().sendTextMessage(commandData.chatId(), FileReader.read(TextFiles.WELCOME_2_TEXT));
         else if (!userRegistrationResponse.usingFirstTime() && !userRegistrationResponse.isGotResult())
             messageSenderService().sendTextMessage(commandData.chatId(), FileReader.read(TextFiles.WELCOME_3_TEXT));
         else {
