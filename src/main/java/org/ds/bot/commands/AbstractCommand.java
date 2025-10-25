@@ -1,5 +1,6 @@
 package org.ds.bot.commands;
 
+import org.ds.bot.states.States;
 import org.ds.service.BotStateService;
 import org.ds.service.message.KeyboardButtonsCallbacksService;
 import org.ds.service.message.MessageSenderService;
@@ -16,7 +17,9 @@ public abstract class AbstractCommand {
         this.botStateService = botStateService;
     }
 
-    public abstract void execute(@NotNull CommandData commandData);
+    public void execute(@NotNull CommandData commandData) {
+        botStateService.changeCurrentState(States.EXECUTING_COMMAND);
+    }
 
     public MessageSenderService messageSenderService() {
         return messageSenderService;

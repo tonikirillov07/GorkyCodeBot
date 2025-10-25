@@ -21,4 +21,8 @@ public record CommandData(@NotNull Long chatId,
                                           @NotNull Long userId) {
         return new CommandData(chatId, "NO_COMMAND", username, userId);
     }
+
+    public boolean isIgnoreInterruptConfirmation() {
+        return Commands.isCommandIgnoreInterruptConfirmation(command);
+    }
 }

@@ -41,7 +41,7 @@ public class CommandsProcessor {
         if (!Utils.isMessageCommand(commandData.command()))
             throw new IllegalArgumentException("Message %s isn't command".formatted(commandData.command()));
 
-        if (botStateService.getCurrentState() != States.NONE) {
+        if ((botStateService.getCurrentState() != States.NONE) && !commandData.isIgnoreInterruptConfirmation()) {
             confirmInterrupt(commandData);
             return;
         }
@@ -67,11 +67,9 @@ public class CommandsProcessor {
     }
 
     private void executeCommand(@NotNull CommandData commandData) {
-        botStateService.changeCurrentState(States.EXECUTING_COMMAND);
-
         switch (commandData.command()) {
-            case "/start" -> startCommand.execute(commandData);
-            case "/clear" -> clearCommand.execute(commandData);
+            case Commands.START -> startCommand.execute(commandData);
+            case Commands.CLEAR -> clearCommand.execute(commandData);
             default -> commandNotFound(commandData.chatId());
         }
     }

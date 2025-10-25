@@ -32,6 +32,8 @@ public class StartCommand extends AbstractCommand {
 
     @Override
     public void execute(@NotNull CommandData commandData) {
+        super.execute(commandData);
+
         UserRegistrationResponse userRegistrationResponse = checkUserRegistration(commandData.userId());
 
         if (!userRegistrationResponse.usingFirstTime() && userRegistrationResponse.isGotResult())

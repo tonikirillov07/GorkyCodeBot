@@ -19,13 +19,22 @@ import java.util.function.Consumer;
 public class ClearCommand extends AbstractCommand {
     private final StartCommand startCommand;
 
-    protected ClearCommand(MessageSenderService messageSenderService, KeyboardButtonsCallbacksService keyboardButtonsCallbacksService, BotStateService botStateService, StartCommand startCommand) {
+    protected ClearCommand(@NotNull MessageSenderService messageSenderService,
+                           @NotNull KeyboardButtonsCallbacksService keyboardButtonsCallbacksService,
+                           @NotNull BotStateService botStateService, StartCommand startCommand) {
         super(messageSenderService, keyboardButtonsCallbacksService, botStateService);
         this.startCommand = startCommand;
     }
 
     @Override
     public void execute(@NotNull CommandData commandData) {
+        if (botStateService().getCurrentState() == States.NONE) {
+            messageSenderService().sendTextMessage(commandData.chatId(), FileReader.read(TextFiles.NOTHING_TO_CLEAR_TEXT));
+            return;
+        }
+
+        super.execute(commandData);
+
         Consumer<MessageSenderService> onConfirm = _ -> confirmClear(commandData);
 
         Consumer<MessageSenderService> onCancel = messageSenderService -> {
@@ -50,7 +59,7 @@ public class ClearCommand extends AbstractCommand {
 
         messageSenderService().sendButtonsMessage(
                 commandData.chatId(),
-                FileReader.read(TextFiles.CLEAR_DONE),
+                FileReader.read(TextFiles.CLEAR_DONE_TEXT),
                 new KeyboardButton[] {keyboardButton}
         );
 

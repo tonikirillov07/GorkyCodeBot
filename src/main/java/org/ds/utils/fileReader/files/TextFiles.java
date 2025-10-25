@@ -25,7 +25,8 @@ public final class TextFiles {
     public static final String WELCOME_2_TEXT = START_COMMAND_DIRECTORY + "/welcome_2.txt";
     public static final String WELCOME_3_TEXT = START_COMMAND_DIRECTORY + "/welcome_3.txt";
     public static final String CLEAR_TEXT = CLEAR_COMMAND_DIRECTORY + "/clearConfirmation.txt";
-    public static final String CLEAR_DONE = CLEAR_COMMAND_DIRECTORY + "/clearDone.txt";
+    public static final String CLEAR_DONE_TEXT = CLEAR_COMMAND_DIRECTORY + "/clearDone.txt";
+    public static final String NOTHING_TO_CLEAR_TEXT = CLEAR_COMMAND_DIRECTORY + "/nothingToClear.txt";
 
     public static final String COMMAND_CONFIRMATION_TEXT = COMMANDS_DIRECTORY + "/commandConfirmation.txt";
     public static final String COMMAND_NOT_FOUND_TEXT = COMMANDS_DIRECTORY + "/commandNotFound.txt";
