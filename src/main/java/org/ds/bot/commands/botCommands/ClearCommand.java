@@ -2,6 +2,7 @@ package org.ds.bot.commands.botCommands;
 
 import org.ds.bot.commands.AbstractCommand;
 import org.ds.bot.commands.CommandData;
+import org.ds.bot.inlineKeyboard.KeyboardButton;
 import org.ds.bot.inlineKeyboard.Keyboards;
 import org.ds.bot.states.States;
 import org.ds.service.BotStateService;
@@ -16,16 +17,16 @@ import java.util.function.Consumer;
 
 @Component
 public class ClearCommand extends AbstractCommand {
-    protected ClearCommand(MessageSenderService messageSenderService, KeyboardButtonsCallbacksService keyboardButtonsCallbacksService, BotStateService botStateService) {
+    private final StartCommand startCommand;
+
+    protected ClearCommand(MessageSenderService messageSenderService, KeyboardButtonsCallbacksService keyboardButtonsCallbacksService, BotStateService botStateService, StartCommand startCommand) {
         super(messageSenderService, keyboardButtonsCallbacksService, botStateService);
+        this.startCommand = startCommand;
     }
 
     @Override
     public void execute(@NotNull CommandData commandData) {
-        Consumer<MessageSenderService> onConfirm = messageSenderService -> {
-            messageSenderService.sendTextMessage(commandData.chatId(), FileReader.read(TextFiles.CLEAR_DONE));
-            botStateService().changeCurrentState(States.NONE);
-        };
+        Consumer<MessageSenderService> onConfirm = _ -> confirmClear(commandData);
 
         Consumer<MessageSenderService> onCancel = messageSenderService -> {
             messageSenderService.sendTextMessage(commandData.chatId(), FileReader.read(TextFiles.COMMAND_CANCELED_TEXT));
@@ -40,5 +41,19 @@ public class ClearCommand extends AbstractCommand {
                 onConfirm,
                 onCancel
         );
+    }
+
+    private void confirmClear(@NotNull CommandData commandData) {
+        KeyboardButton keyboardButton = new KeyboardButton("Начать", "start_by_start", _ ->
+                startCommand.execute(commandData)
+        ).addToCallbacksProcessor(keyboardButtonsCallbacksService());
+
+        messageSenderService().sendButtonsMessage(
+                commandData.chatId(),
+                FileReader.read(TextFiles.CLEAR_DONE),
+                new KeyboardButton[] {keyboardButton}
+        );
+
+        botStateService().changeCurrentState(States.NONE);
     }
 }

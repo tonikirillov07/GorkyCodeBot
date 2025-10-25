@@ -1,16 +1,24 @@
 package org.ds.bot.commands;
 
-import org.ds.bot.states.States;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 public record CommandData(@NotNull Long chatId,
                           @NotNull String command,
-                          @NotNull String username) {
-    @Contract("_, _, _ -> new")
+                          @NotNull String username,
+                          @NotNull Long userId) {
+    @Contract("_, _, _, _ -> new")
     public static @NotNull CommandData of(@NotNull Long chatId,
                                           @NotNull String command,
-                                          @NotNull String username) {
-        return new CommandData(chatId, command, username);
+                                          @NotNull String username,
+                                          @NotNull Long userId) {
+        return new CommandData(chatId, command, username, userId);
+    }
+
+    @Contract("_, _, _ -> new")
+    public static @NotNull CommandData of(@NotNull Long chatId,
+                                          @NotNull String username,
+                                          @NotNull Long userId) {
+        return new CommandData(chatId, "NO_COMMAND", username, userId);
     }
 }

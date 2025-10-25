@@ -22,6 +22,7 @@ public final class TextFiles {
     public static final String USER_PLACES_PROMPT = PROMPTS_DIRECTORY + "/userPlaces.txt";
 
     public static final String WELCOME_TEXT = START_COMMAND_DIRECTORY + "/welcome.txt";
+    public static final String WELCOME_2_TEXT = START_COMMAND_DIRECTORY + "/welcome_2.txt";
     public static final String CLEAR_TEXT = CLEAR_COMMAND_DIRECTORY + "/clearConfirmation.txt";
     public static final String CLEAR_DONE = CLEAR_COMMAND_DIRECTORY + "/clearDone.txt";
 

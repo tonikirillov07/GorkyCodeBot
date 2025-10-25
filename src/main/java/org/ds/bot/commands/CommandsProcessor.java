@@ -13,6 +13,7 @@ import org.ds.utils.fileReader.files.PhotoFiles;
 import org.ds.utils.fileReader.files.TextFiles;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.function.Consumer;
@@ -71,10 +72,12 @@ public class CommandsProcessor {
         switch (commandData.command()) {
             case "/start" -> startCommand.execute(commandData);
             case "/clear" -> clearCommand.execute(commandData);
-            default -> {
-                messageSenderService.sendTextMessage(commandData.chatId(), FileReader.read(TextFiles.COMMAND_NOT_FOUND_TEXT));
-                botStateService.changeCurrentState(States.NONE);
-            }
+            default -> commandNotFound(commandData.chatId());
         }
+    }
+
+    private void commandNotFound(@NotNull Long chatId) {
+        messageSenderService.sendTextMessage(chatId, FileReader.read(TextFiles.COMMAND_NOT_FOUND_TEXT));
+        botStateService.changeCurrentState(States.NONE);
     }
 }

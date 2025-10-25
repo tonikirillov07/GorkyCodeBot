@@ -1,12 +1,14 @@
 package org.ds.bot;
 
 import com.pengrad.telegrambot.UpdatesListener;
+import com.pengrad.telegrambot.model.ChatMember;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import org.ds.bot.commands.CommandData;
 import org.ds.bot.commands.CommandsProcessor;
 import org.ds.bot.preparingSteps.PreparingSteps;
 import org.ds.bot.states.States;
+import org.ds.service.BotBlockedService;
 import org.ds.service.BotStateService;
 import org.ds.service.message.KeyboardButtonsCallbacksService;
 import org.ds.service.message.MessageSenderService;
@@ -21,16 +23,14 @@ import java.util.List;
 
 @Component
 public class BotUpdates implements UpdatesListener {
-    @Autowired
-    private CommandsProcessor commandsProcessor;
-    @Autowired
-    private KeyboardButtonsCallbacksService keyboardButtonsCallbacksService;
-    @Autowired
     private BotStateService botStateService;
-    @Autowired
+    private CommandsProcessor commandsProcessor;
+    private KeyboardButtonsCallbacksService keyboardButtonsCallbacksService;
     private PreparingSteps preparingSteps;
-    @Autowired
     private MessageSenderService messageSenderService;
+    private BotBlockedService botBlockedService;
+
+    public BotUpdates() {}
 
     @Override
     public int process(@NotNull List<Update> list) {
@@ -43,6 +43,9 @@ public class BotUpdates implements UpdatesListener {
         if (update.callbackQuery() != null)
             keyboardButtonsCallbacksService.processCallbacks(update.callbackQuery());
 
+        if (botBlockedService.tryProcessBlock(update))
+            return;
+
         Message message = update.message();
         if (message == null)
             return;
@@ -50,8 +53,9 @@ public class BotUpdates implements UpdatesListener {
         Long chatId = message.chat().id();
         String messageText = message.text();
         String username = Utils.getUsername(message.from());
+        Long userId = message.from().id();
 
-        if ((messageText != null) && processCommands(chatId, messageText, username))
+        if ((messageText != null) && processCommands(chatId, messageText, username, userId))
             return;
 
         if (preparingSteps.tryPrepare(chatId, message))
@@ -60,15 +64,45 @@ public class BotUpdates implements UpdatesListener {
         messageSenderService.sendTextMessage(chatId, FileReader.read(TextFiles.NO_COMMANDS_EXECUTING_TEXT));
     }
 
-    private boolean processCommands(@NotNull Long chatId, @NotNull String messageText, @NotNull String username) {
+    private boolean processCommands(@NotNull Long chatId, @NotNull String messageText, @NotNull String username, @NotNull Long userId) {
         if (botStateService.getCurrentState() == States.EXECUTING_COMMAND)
             return false;
 
         if (Utils.isMessageCommand(messageText)) {
-            commandsProcessor.processCommand(CommandData.of(chatId, messageText, username));
+            commandsProcessor.processCommand(CommandData.of(chatId, messageText, username, userId));
             return true;
         }
 
         return false;
+    }
+
+    @Autowired
+    public void setBotStateService(BotStateService botStateService) {
+        this.botStateService = botStateService;
+    }
+
+    @Autowired
+    public void setCommandsProcessor(CommandsProcessor commandsProcessor) {
+        this.commandsProcessor = commandsProcessor;
+    }
+
+    @Autowired
+    public void setKeyboardButtonsCallbacksService(KeyboardButtonsCallbacksService keyboardButtonsCallbacksService) {
+        this.keyboardButtonsCallbacksService = keyboardButtonsCallbacksService;
+    }
+
+    @Autowired
+    public void setPreparingSteps(PreparingSteps preparingSteps) {
+        this.preparingSteps = preparingSteps;
+    }
+
+    @Autowired
+    public void setMessageSenderService(MessageSenderService messageSenderService) {
+        this.messageSenderService = messageSenderService;
+    }
+
+    @Autowired
+    public void setBotBlockedService(BotBlockedService botBlockedService) {
+        this.botBlockedService = botBlockedService;
     }
 }
