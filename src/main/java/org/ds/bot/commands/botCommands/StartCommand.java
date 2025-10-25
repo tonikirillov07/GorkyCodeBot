@@ -6,6 +6,7 @@ import org.ds.bot.commands.CommandData;
 import org.ds.bot.states.States;
 import org.ds.db.UserRegistrationResponse;
 import org.ds.db.entity.UserEntity;
+import org.ds.exceptions.UserNotFoundException;
 import org.ds.service.BotStateService;
 import org.ds.service.db.DBService;
 import org.ds.service.message.KeyboardButtonsCallbacksService;
@@ -40,9 +41,18 @@ public class StartCommand extends AbstractCommand {
             messageSenderService().sendTextMessage(commandData.chatId(), FileReader.read(TextFiles.WELCOME_2_TEXT));
         else if (!userRegistrationResponse.usingFirstTime() && !userRegistrationResponse.isGotResult())
             messageSenderService().sendTextMessage(commandData.chatId(), FileReader.read(TextFiles.WELCOME_3_TEXT));
-        else
-            messageSenderService().sendPhotoMessage(commandData.chatId(), PhotoFiles.MAIN_PHOTO,
-                    FileReader.read(TextFiles.WELCOME_TEXT).formatted(commandData.username()));
+        else {
+            if (messageSenderService().sendPhotoMessage(commandData.chatId(), PhotoFiles.MAIN_PHOTO,
+                    FileReader.read(TextFiles.WELCOME_TEXT).formatted(commandData.username())).isOk()) {
+                UserEntity user = dBService.getUserByUserId(commandData.userId());
+                if (user == null)
+                    throw new UserNotFoundException(commandData.userId());
+
+                user.setUsingFirstTime(false);
+
+                dBService.updateUser(user);
+            }
+        }
 
         botStateService().changeCurrentState(States.REQUIRES_INTERESTS);
     }
@@ -53,7 +63,7 @@ public class StartCommand extends AbstractCommand {
         if (dBService.existsUserByUserId(userId)) {
             UserEntity user = dBService.getUserByUserId(userId);
             if (user == null)
-                throw new NullPointerException("User with id %d is null".formatted(userId));
+                throw new UserNotFoundException(userId);
 
             usingFirstTime = user.getUsingFirstTime() ||
                     Utils.getDifferenceBetweenDatesInHours(user.getLastUsingTime(), LocalDateTime.now()) >= botInfo.sayHelloInterval();
@@ -68,7 +78,7 @@ public class StartCommand extends AbstractCommand {
             usingFirstTime = true;
             gotResult = false;
 
-            dBService.addUser(UserEntity.createNewUser(userId));
+            dBService.addUser(UserEntity.of(userId, true, false, LocalDateTime.now()));
         }
 
         return UserRegistrationResponse.of(usingFirstTime, gotResult);

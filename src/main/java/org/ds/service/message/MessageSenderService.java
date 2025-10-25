@@ -32,7 +32,7 @@ public class MessageSenderService {
      * @param chatId current chat id
      * @param message message to send
      */
-    public void sendTextMessage(@NotNull Long chatId, @NotNull String message) {
+    public SendResponse sendTextMessage(@NotNull Long chatId, @NotNull String message) {
         sendChatAction(chatId, ChatAction.typing);
 
         SendMessage request = new SendMessage(chatId, message)
@@ -50,6 +50,7 @@ public class MessageSenderService {
             log.error("Message sending failed. Error Code: %d, Message: %s"
                     .formatted(sendResponse.errorCode(), sendResponse.description()));
 
+        return sendResponse;
     }
 
     /**
@@ -70,7 +71,7 @@ public class MessageSenderService {
      * @param message message text
      * @param keyboardButtons buttons list
      */
-    public void sendButtonsMessage(@NotNull Long chatId,
+    public SendResponse sendButtonsMessage(@NotNull Long chatId,
                                    @NotNull String message,
                                    KeyboardButton[] keyboardButtons) {
         InlineKeyboardMarkup keyboardMarkup = new InlineKeyboardMarkup();
@@ -82,7 +83,7 @@ public class MessageSenderService {
                 .parseMode(ParseMode.HTML)
                 .replyMarkup(keyboardMarkup);
 
-        telegramBot.execute(sendMessage);
+        return telegramBot.execute(sendMessage);
     }
 
     /**
@@ -91,7 +92,7 @@ public class MessageSenderService {
      * @param photoPath path to image from resources
      * @param message text message to image
      */
-    public void sendPhotoMessage(@NotNull Long chatId,
+    public SendResponse sendPhotoMessage(@NotNull Long chatId,
                                  @NotNull String photoPath,
                                  @NotNull String message) {
         sendChatAction(chatId, ChatAction.upload_photo);
@@ -100,6 +101,6 @@ public class MessageSenderService {
         sendPhoto.setCaption(message);
         sendPhoto.setParseMode(ParseMode.HTML);
 
-        telegramBot.execute(sendPhoto);
+        return telegramBot.execute(sendPhoto);
     }
 }
