@@ -45,6 +45,8 @@ public class GeopositionStep {
         Location location = message.location();
 
         if (location == null) {
+            botStateService.changeCurrentState(States.GENERATING_THOUGHTS);
+
             responseProcessor.processResponse(
                     FileReader.read(TextFiles.GEOPOSITION_PROMPT).formatted(message.text()),
                     GeopositionResponse.class,
@@ -54,10 +56,14 @@ public class GeopositionStep {
 
                         applyGeoposition(currentLocation.get(), userPlacesData);
                         returnValue.set(true);
+
+                        botStateService.changeCurrentState(States.NONE);
                     },
                     description -> {
                         messageSenderService.sendTextMessage(chatId, description);
-                        returnValue.set(false);
+                        returnValue.set(true);
+
+                        botStateService.changeCurrentState(States.REQUIRES_GEOPOSITION);
                     }
             );
         } else {
@@ -65,6 +71,8 @@ public class GeopositionStep {
 
             applyGeoposition(currentLocation.get(), userPlacesData);
             returnValue.set(true);
+
+            botStateService.changeCurrentState(States.NONE);
         }
 
         return returnValue.get();

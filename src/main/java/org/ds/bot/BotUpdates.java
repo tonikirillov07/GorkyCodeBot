@@ -4,6 +4,8 @@ import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.ChatMember;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.ds.bot.commands.CommandData;
 import org.ds.bot.commands.CommandsProcessor;
 import org.ds.bot.preparingSteps.PreparingSteps;
@@ -12,6 +14,7 @@ import org.ds.service.BotBlockedService;
 import org.ds.service.BotStateService;
 import org.ds.service.message.KeyboardButtonsCallbacksService;
 import org.ds.service.message.MessageSenderService;
+import org.ds.service.message.MessagesDeleterService;
 import org.ds.utils.Utils;
 import org.ds.utils.fileReader.FileReader;
 import org.ds.utils.fileReader.files.TextFiles;
@@ -24,12 +27,14 @@ import java.util.List;
 
 @Component
 public class BotUpdates implements UpdatesListener {
+    private static final Log log = LogFactory.getLog(BotUpdates.class);
     private BotStateService botStateService;
     private CommandsProcessor commandsProcessor;
     private KeyboardButtonsCallbacksService keyboardButtonsCallbacksService;
     private PreparingSteps preparingSteps;
     private MessageSenderService messageSenderService;
     private final BotBlockedService botBlockedService;
+    private MessagesDeleterService messagesDeleterService;
 
     public BotUpdates(BotBlockedService botBlockedService) {
         this.botBlockedService = botBlockedService;
@@ -57,6 +62,14 @@ public class BotUpdates implements UpdatesListener {
         String messageText = message.text();
         String username = Utils.getUsername(message.from());
         Long userId = message.from().id();
+
+        if (botStateService.getCurrentState() == States.GENERATING_THOUGHTS) {
+            messagesDeleterService.deleteMessage(chatId, message.messageId());
+            return;
+        }
+
+        if (messageText != null)
+            log.info("User %s sent message: %s".formatted(username, messageText));
 
         if ((messageText != null) && processCommands(chatId, messageText, username, userId))
             return;
@@ -102,5 +115,10 @@ public class BotUpdates implements UpdatesListener {
     @Autowired
     public void setMessageSenderService(MessageSenderService messageSenderService) {
         this.messageSenderService = messageSenderService;
+    }
+
+    @Autowired
+    public void setMessagesDeleterService(MessagesDeleterService messagesDeleterService) {
+        this.messagesDeleterService = messagesDeleterService;
     }
 }

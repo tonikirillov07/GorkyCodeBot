@@ -1,6 +1,7 @@
 package org.ds.bot.preparingSteps.steps;
 
 import com.pengrad.telegrambot.model.request.ChatAction;
+import com.pengrad.telegrambot.request.SendVenue;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.ds.bot.preparingSteps.UserPlacesData;
@@ -45,6 +46,8 @@ public class FinishStep {
         messageSenderService.sendChatAction(chatId, ChatAction.typing);
 
         if (userPlacesData.isCompleted()) {
+            botStateService.changeCurrentState(States.GENERATING_THOUGHTS);
+
             String prompt = FileReader.read(TextFiles.USER_PLACES_PROMPT)
                     .formatted(
                             DatasetsLinks.DATASET_1,
@@ -56,6 +59,8 @@ public class FinishStep {
             messageSenderService.sendTextMessage(chatId, aIService.getResponse(prompt));
 
             updateUser(userId);
+
+            botStateService.changeCurrentState(States.NONE);
         } else
             messageSenderService.sendTextMessage(chatId, FileReader.read(TextFiles.DATA_COLLECTION_WAS_NOT_COMPLETED_TEXT)
                     .formatted(userPlacesData.getNotCompletedData()));

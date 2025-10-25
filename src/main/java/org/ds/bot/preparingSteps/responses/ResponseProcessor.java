@@ -18,12 +18,18 @@ public class ResponseProcessor {
         this.aIService = aIService;
     }
 
-    public  <T extends Response> void processResponse(
+    public <T extends Response> void processResponse(
             @NotNull String prompt,
             Class<T> responseClass,
             Consumer<Response> onCorrect,
             Consumer<String> onIncorrect) {
+
         String responseMessage = aIService.getResponse(prompt);
+
+        if (responseMessage.toCharArray()[0] != '{') {
+            responseMessage = responseMessage.replaceAll("`", "");
+            responseMessage = responseMessage.replaceAll("json", "");
+        }
 
         log.info("Response: %s".formatted(responseMessage));
 

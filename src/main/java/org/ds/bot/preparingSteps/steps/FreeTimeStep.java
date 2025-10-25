@@ -36,6 +36,7 @@ public class FreeTimeStep {
         log.info("Processing free time...");
 
         messageSenderService.sendChatAction(chatId, ChatAction.typing);
+        botStateService.changeCurrentState(States.GENERATING_THOUGHTS);
 
         responseProcessor.processResponse(
                 FileReader.read(TextFiles.FREE_TIME_PROMPT).formatted(messageText),
@@ -47,7 +48,10 @@ public class FreeTimeStep {
                     messageSenderService.sendTextMessage(chatId, FileReader.read(TextFiles.FREE_TIME_ACCEPTED_TEXT));
                     botStateService.changeCurrentState(States.REQUIRES_GEOPOSITION);
                 },
-                description -> messageSenderService.sendTextMessage(chatId, description)
+                description -> {
+                    messageSenderService.sendTextMessage(chatId, description);
+                    botStateService.changeCurrentState(States.REQUIRES_FREE_TIME);
+                }
         );
 
         log.info("Free time processed!");

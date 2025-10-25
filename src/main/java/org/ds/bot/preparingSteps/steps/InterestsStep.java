@@ -36,6 +36,7 @@ public class InterestsStep {
         log.info("Processing interests...");
 
         messageSenderService.sendChatAction(chatId, ChatAction.typing);
+        botStateService.changeCurrentState(States.GENERATING_THOUGHTS);
 
         responseProcessor.processResponse(
                 FileReader.read(TextFiles.INTERESTS_PROMPT).formatted(messageText),
@@ -47,7 +48,10 @@ public class InterestsStep {
                     messageSenderService.sendTextMessage(chatId, FileReader.read(TextFiles.INTERESTS_ACCEPTED_TEXT));
                     botStateService.changeCurrentState(States.REQUIRES_FREE_TIME);
                 },
-                description -> messageSenderService.sendTextMessage(chatId, description)
+                description -> {
+                    messageSenderService.sendTextMessage(chatId, description);
+                    botStateService.changeCurrentState(States.REQUIRES_INTERESTS);
+                }
         );
 
         log.info("Interests processed!");
