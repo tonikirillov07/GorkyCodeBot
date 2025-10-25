@@ -36,7 +36,7 @@ public class PreparingSteps {
             return true;
 
         if (geopositionStep.tryProcessGeoposition(chatId, message, userPlacesData)) {
-            finishStep.processFinish(chatId, userPlacesData);
+            finishStep.processFinish(chatId, message.from().id(), userPlacesData);
 
             return true;
         }

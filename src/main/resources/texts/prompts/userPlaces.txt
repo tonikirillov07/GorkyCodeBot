@@ -14,7 +14,7 @@
 Примерное время: k ч./м.
 
 В ответе должен быть только список такого вида, ничего больше.
-Можно использовать данные из этой таблицы: https://docs.360.yandex.ru/docs/view?url=ya-disk-public%3A%2F%2FAlGyJz4NBlcbCYvNKbnkBFEDfReGrsJ6kCCFQfMT9ZwxmnsxGDOz3ewUC%2BFGCf7C%2FCH%2B%2BsnE5duAiqM%2FEjDILQ%3D%3D%3A%2Fcultural_objects_mnn.xlsx&name=cultural_objects_mnn.xlsx&nosw=1
+Можно использовать данные из этой таблицы, а также можно использовать другие данные из интернета: %s
 
 Если таких мест по каким-то причинам найти не удалось, то в ответе должна быть указана причина, почему такие места не найдены.
 

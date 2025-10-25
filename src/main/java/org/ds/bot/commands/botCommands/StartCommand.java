@@ -32,17 +32,21 @@ public class StartCommand extends AbstractCommand {
 
     @Override
     public void execute(@NotNull CommandData commandData) {
-        if (checkUserRegistration(commandData.userId()).usingFirstTime())
+        UserRegistrationResponse userRegistrationResponse = checkUserRegistration(commandData.userId());
+
+        if (!userRegistrationResponse.usingFirstTime() && userRegistrationResponse.isGotResult())
+            messageSenderService().sendTextMessage(commandData.chatId(), FileReader.read(TextFiles.WELCOME_2_TEXT));
+        else if (!userRegistrationResponse.usingFirstTime() && !userRegistrationResponse.isGotResult())
+            messageSenderService().sendTextMessage(commandData.chatId(), FileReader.read(TextFiles.WELCOME_3_TEXT));
+        else
             messageSenderService().sendPhotoMessage(commandData.chatId(), PhotoFiles.MAIN_PHOTO,
                     FileReader.read(TextFiles.WELCOME_TEXT).formatted(commandData.username()));
-        else
-            messageSenderService().sendTextMessage(commandData.chatId(), FileReader.read(TextFiles.WELCOME_2_TEXT));
 
         botStateService().changeCurrentState(States.REQUIRES_INTERESTS);
     }
 
     private @NotNull UserRegistrationResponse checkUserRegistration(Long userId) {
-        boolean usingFirstTime;
+        boolean usingFirstTime, gotResult;
 
         if (dBService.existsUserByUserId(userId)) {
             UserEntity user = dBService.getUserByUserId(userId);
@@ -52,15 +56,19 @@ public class StartCommand extends AbstractCommand {
             usingFirstTime = user.getUsingFirstTime() ||
                     Utils.getDifferenceBetweenDatesInHours(user.getLastUsingTime(), LocalDateTime.now()) >= botInfo.sayHelloInterval();
 
+            gotResult = user.getGotResult();
+
             UserEntity userToUpdate = UserEntity.of(user);
             userToUpdate.setLastUsingTime(LocalDateTime.now());
 
             dBService.updateUser(userToUpdate);
         } else {
             usingFirstTime = true;
-            dBService.addUser(UserEntity.of(userId, false, LocalDateTime.now()));
+            gotResult = false;
+
+            dBService.addUser(UserEntity.createNewUser(userId));
         }
 
-        return UserRegistrationResponse.of(usingFirstTime);
+        return UserRegistrationResponse.of(usingFirstTime, gotResult);
     }
 }

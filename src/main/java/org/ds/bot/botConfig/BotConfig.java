@@ -7,6 +7,7 @@ import org.ds.bot.BotUpdates;
 import org.ds.bot.BotInfo;
 import org.ds.bot.commands.CommandsProcessor;
 import org.ds.bot.preparingSteps.PreparingSteps;
+import org.ds.service.BotBlockedService;
 import org.ds.service.BotStateService;
 import org.ds.service.message.KeyboardButtonsCallbacksService;
 import org.ds.service.message.MessageSenderService;
@@ -35,8 +36,8 @@ public class BotConfig {
     }
 
     @Bean
-    public UpdatesListener botUpdates() {
-        return new BotUpdates();
+    public UpdatesListener botUpdates(BotBlockedService botBlockedService) {
+        return new BotUpdates(botBlockedService);
     }
 
     @Bean

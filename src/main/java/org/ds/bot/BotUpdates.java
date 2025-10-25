@@ -17,6 +17,7 @@ import org.ds.utils.fileReader.FileReader;
 import org.ds.utils.fileReader.files.TextFiles;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -28,9 +29,11 @@ public class BotUpdates implements UpdatesListener {
     private KeyboardButtonsCallbacksService keyboardButtonsCallbacksService;
     private PreparingSteps preparingSteps;
     private MessageSenderService messageSenderService;
-    private BotBlockedService botBlockedService;
+    private final BotBlockedService botBlockedService;
 
-    public BotUpdates() {}
+    public BotUpdates(BotBlockedService botBlockedService) {
+        this.botBlockedService = botBlockedService;
+    }
 
     @Override
     public int process(@NotNull List<Update> list) {
@@ -99,10 +102,5 @@ public class BotUpdates implements UpdatesListener {
     @Autowired
     public void setMessageSenderService(MessageSenderService messageSenderService) {
         this.messageSenderService = messageSenderService;
-    }
-
-    @Autowired
-    public void setBotBlockedService(BotBlockedService botBlockedService) {
-        this.botBlockedService = botBlockedService;
     }
 }

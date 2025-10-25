@@ -1,12 +1,13 @@
 package org.ds.db;
 
-import org.ds.db.entity.UserEntity;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-public record UserRegistrationResponse(@NotNull Boolean usingFirstTime) {
-    @Contract("_ -> new")
-    public static @NotNull UserRegistrationResponse of(@NotNull Boolean usingFirstTime) {
-        return new UserRegistrationResponse(usingFirstTime);
+public record UserRegistrationResponse(@NotNull Boolean usingFirstTime,
+                                       @NotNull Boolean isGotResult) {
+    @Contract("_, _ -> new")
+    public static @NotNull UserRegistrationResponse of(@NotNull Boolean usingFirstTime,
+                                                       @NotNull Boolean isGotResult) {
+        return new UserRegistrationResponse(usingFirstTime, isGotResult);
     }
 }
