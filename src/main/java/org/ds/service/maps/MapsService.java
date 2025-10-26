@@ -1,11 +1,12 @@
 package org.ds.service.maps;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.ds.exceptions.GettingResponseException;
+import org.ds.exceptions.JSONProcessingException;
 import org.ds.maps.CoordinatesResponse;
-import org.ds.maps.FeatureMember;
-import org.ds.maps.YandexGeocodeResponse;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +28,7 @@ public class MapsService {
         this.apiKey = apiKey;
     }
 
-    public @Nullable CoordinatesResponse getCoordinatesByAddress(@NotNull String placeName) throws IOException, InterruptedException {
+    public @NotNull CoordinatesResponse getCoordinatesByAddress(@NotNull String placeName) {
         HttpClient client = HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_2)
                 .connectTimeout(Duration.ofSeconds(10))
@@ -36,22 +37,32 @@ public class MapsService {
         String address = URLEncoder.encode(placeName, StandardCharsets.UTF_8);
         String url = "https://geocode-maps.yandex.ru/1.x?geocode=" + address + "&format=json&apikey=" + apiKey;
 
-        HttpResponse<String> response = getResponse(client, url);
-
-        if (response.statusCode() != 200) {
-            return new CoordinatesResponse(false, response.body());
+        HttpResponse<String> response;
+        try {
+            response = getResponse(client, url);
+        } catch (IOException | InterruptedException e) {
+            throw new GettingResponseException(e);
         }
+
+        if (response.statusCode() != 200)
+            return new CoordinatesResponse(false, response.body());
 
         String json = response.body();
         ObjectMapper mapper = new ObjectMapper();
-        YandexGeocodeResponse yandexGeocodeResponse = mapper.readValue(json, YandexGeocodeResponse.class);
+        YandexGeocodeResponse yandexGeocodeResponse;
+
+        try {
+            yandexGeocodeResponse = mapper.readValue(json, YandexGeocodeResponse.class);
+        } catch (JsonProcessingException e) {
+            throw new JSONProcessingException(e);
+        }
 
         if (!checkYandexGeocodeResponse(yandexGeocodeResponse))
-            return new CoordinatesResponse(false, "Failed to get coordinated from request");
+            return new CoordinatesResponse(false, "Failed to get coordinates from request");
 
-        FeatureMember member = yandexGeocodeResponse.response().geoObjectCollection().featureMember()[0];
+        FeatureMember member = yandexGeocodeResponse.response.GeoObjectCollection.featureMember[0];
         if (checkGeoObject(member)) {
-            String[] coords = member.geoObject().point().position().split(" ");
+            String[] coords = member.GeoObject.Point.pos.split(" ");
 
             if (coords.length == 2) {
                 float lat = Float.parseFloat(coords[1]);
@@ -67,15 +78,15 @@ public class MapsService {
     }
 
     private boolean checkGeoObject(@NotNull FeatureMember featureMember) {
-        return featureMember.geoObject() != null && featureMember.geoObject().point() != null;
+        return featureMember.GeoObject != null && featureMember.GeoObject.Point != null;
     }
 
     private boolean checkYandexGeocodeResponse(YandexGeocodeResponse yandexGeocodeResponse) {
         return yandexGeocodeResponse != null &&
-                yandexGeocodeResponse.response() != null &&
-                yandexGeocodeResponse.response().geoObjectCollection() != null &&
-                yandexGeocodeResponse.response().geoObjectCollection().featureMember() != null &&
-                yandexGeocodeResponse.response().geoObjectCollection().featureMember().length > 0;
+                yandexGeocodeResponse.response != null &&
+                yandexGeocodeResponse.response.GeoObjectCollection != null &&
+                yandexGeocodeResponse.response.GeoObjectCollection.featureMember != null &&
+                yandexGeocodeResponse.response.GeoObjectCollection.featureMember.length > 0;
     }
 
     private HttpResponse<String> getResponse(@NotNull HttpClient client, String url) throws IOException, InterruptedException {
@@ -86,5 +97,35 @@ public class MapsService {
                 .build();
 
         return client.send(request, HttpResponse.BodyHandlers.ofString());
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    static class YandexGeocodeResponse {
+        public Response response;
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    static class Response {
+        public GeoObjectCollection GeoObjectCollection;
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    static class GeoObjectCollection {
+        public FeatureMember[] featureMember;
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    static class FeatureMember {
+        public GeoObject GeoObject;
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    static class GeoObject {
+        public Point Point;
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    static class Point {
+        public String pos;
     }
 }

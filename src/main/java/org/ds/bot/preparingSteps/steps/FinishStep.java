@@ -12,6 +12,7 @@ import org.ds.db.entity.UserEntity;
 import org.ds.service.BotStateService;
 import org.ds.service.ai.AIService;
 import org.ds.service.db.DBService;
+import org.ds.service.maps.MapsService;
 import org.ds.service.message.KeyboardButtonsCallbacksService;
 import org.ds.service.message.MessageSenderService;
 import org.ds.utils.datasets.DatasetsLinks;
@@ -31,17 +32,19 @@ public class FinishStep {
     private final DBService dBService;
     private final ResponseProcessor responseProcessor;
     private final KeyboardButtonsCallbacksService keyboardButtonsCallbacksService;
+    private final MapsService mapsService;
 
     public FinishStep(@NotNull BotStateService botStateService,
                       @NotNull MessageSenderService messageSenderService,
                       @NotNull AIService aIService,
-                      @NotNull DBService dBService, ResponseProcessor responseProcessor, KeyboardButtonsCallbacksService keyboardButtonsCallbacksService) {
+                      @NotNull DBService dBService, ResponseProcessor responseProcessor, KeyboardButtonsCallbacksService keyboardButtonsCallbacksService, MapsService mapsService) {
         this.botStateService = botStateService;
         this.messageSenderService = messageSenderService;
         this.aIService = aIService;
         this.dBService = dBService;
         this.responseProcessor = responseProcessor;
         this.keyboardButtonsCallbacksService = keyboardButtonsCallbacksService;
+        this.mapsService = mapsService;
     }
 
     public void processFinish(@NotNull Long userId,
@@ -77,7 +80,7 @@ public class FinishStep {
                         messageSenderService.sendButtonsMessage(
                                 chatId,
                                 userPlacesResponse.getResponseAsString(),
-                                userPlacesResponse.getPlacesButtons(chatId, keyboardButtonsCallbacksService));
+                                userPlacesResponse.getPlacesButtons(chatId, keyboardButtonsCallbacksService, mapsService));
                     },
                     description -> messageSenderService.sendTextMessage(chatId, description));
         } else
