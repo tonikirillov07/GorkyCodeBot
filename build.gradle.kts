@@ -1,5 +1,6 @@
 plugins {
     id("java")
+    application
 }
 
 group = "org.ds"
@@ -31,12 +32,20 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
+tasks.register<Jar>("fatJar") {
+    archiveBaseName.set("${project.name}-fat")
+    manifest {
+        attributes["Main-Class"] = "org.ds.Main"
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from(configurations.runtimeClasspath.get().map {if (it.isDirectory) it else zipTree(it)})
+    with(tasks.jar.get())
+}
+
 tasks.test {
     useJUnitPlatform()
 }
 
-tasks.jar {
-    manifest {
-        attributes(mapOf("Main-Class" to "org.ds.Main"))
-    }
+application {
+    mainClass.set("org.ds.Main")
 }

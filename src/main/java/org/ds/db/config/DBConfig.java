@@ -1,5 +1,6 @@
 package org.ds.db.config;
 
+import org.ds.db.DatabaseInitializer;
 import org.ds.db.entity.UserEntity;
 import org.hibernate.SessionFactory;
 import org.springframework.context.annotation.Bean;
@@ -14,8 +15,8 @@ public class DBConfig {
         configuration
                 .addAnnotatedClass(UserEntity.class)
                 .addPackage("org.ds")
+                .setProperty("hibernate.connection.url", DatabaseInitializer.getDbUrl())
                 .setProperty("hibernate.connection.driver_class", "org.sqlite.JDBC")
-                .setProperty("hibernate.connection.url", "jdbc:sqlite:src/main/resources/db/users.db")
                 .setProperty("hibernate.dialect", "org.hibernate.community.dialect.SQLiteDialect")
                 .setProperty("hibernate.show_sql", "true")
                 .setProperty("hibernate.hbm2ddl.auto", "update");
