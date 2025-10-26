@@ -13,6 +13,8 @@ repositories {
 dependencies {
     implementation("ch.qos.logback:logback-classic:1.5.20")
 
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.15.2")
+
     implementation("org.springframework:spring-core:7.0.0-M9")
     implementation("org.springframework:spring-context:7.0.0-M9")
     implementation("org.springframework:spring-beans:7.0.0-M9")

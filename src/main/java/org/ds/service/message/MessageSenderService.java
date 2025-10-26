@@ -9,11 +9,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.ds.bot.inlineKeyboard.KeyboardButton;
 import org.ds.utils.Utils;
+import org.ds.utils.buttonsMessage.ButtonsMessageUtils;
 import org.ds.utils.fileReader.FileReader;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 @Service
 public class MessageSenderService {
@@ -69,16 +72,35 @@ public class MessageSenderService {
      * @param keyboardButtons buttons list
      */
     public SendResponse sendButtonsMessage(@NotNull Long chatId,
-                                   @NotNull String message,
-                                   KeyboardButton[] keyboardButtons) {
+                                           @NotNull String message,
+                                           KeyboardButton @NotNull [] keyboardButtons) {
         InlineKeyboardMarkup keyboardMarkup = new InlineKeyboardMarkup();
-        InlineKeyboardButton[] inlineKeyboardButtons = Arrays.stream(keyboardButtons).map(keyboardButton -> new InlineKeyboardButton(keyboardButton.text())
-                .callbackData(keyboardButton.callback())).toArray(InlineKeyboardButton[]::new);
-        keyboardMarkup.addRow(inlineKeyboardButtons);
+        List<List<InlineKeyboardButton>> rowsInKeyboard = new ArrayList<>();
 
-        SendMessage sendMessage = new SendMessage(chatId, message)
-                .parseMode(ParseMode.HTML)
-                .replyMarkup(keyboardMarkup);
+        int buttonsPerRow = ButtonsMessageUtils.calculateOptimalButtonsPerRow(keyboardButtons.length);
+        List<InlineKeyboardButton> currentRow = new ArrayList<>();
+
+        for (KeyboardButton button : keyboardButtons) {
+            currentRow.add(new InlineKeyboardButton(button.text()).callbackData(button.callback()));
+
+            if (currentRow.size() >= buttonsPerRow || button.equals(keyboardButtons[keyboardButtons.length - 1])) {
+                rowsInKeyboard.add(currentRow);
+                currentRow = new ArrayList<>();
+            }
+        }
+
+        rowsInKeyboard.forEach(row -> {
+            InlineKeyboardButton[] rowArray = new InlineKeyboardButton[row.size()];
+            for (int i = 0; i < row.size(); i++) {
+                rowArray[i] = row.get(i);
+            }
+
+            keyboardMarkup.addRow(rowArray);
+        });
+
+        SendMessage sendMessage = new SendMessage(chatId, message);
+        sendMessage.replyMarkup(keyboardMarkup);
+        sendMessage.setParseMode(ParseMode.HTML);
 
         return telegramBot.execute(sendMessage);
     }

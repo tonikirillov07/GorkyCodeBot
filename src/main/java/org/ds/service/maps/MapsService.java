@@ -1,65 +1,90 @@
 package org.ds.service.maps;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.ds.maps.CoordinatesResponse;
+import org.ds.maps.FeatureMember;
+import org.ds.maps.YandexGeocodeResponse;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URI;
-import java.net.URL;
-import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.util.Arrays;
 
 @Service
 public class MapsService {
-    private static final Log log = LogFactory.getLog(MapsService.class);
-
     private final String apiKey;
 
     public MapsService(@Qualifier("mapsAPIKey") String apiKey) {
         this.apiKey = apiKey;
     }
 
-    public @Nullable String getCoordinatesByAddress(@NotNull String address) throws IOException {
-        InputStream inputStream = null;
-        BufferedReader reader = null;
+    public @Nullable CoordinatesResponse getCoordinatesByAddress(@NotNull String placeName) throws IOException, InterruptedException {
+        HttpClient client = HttpClient.newBuilder()
+                .version(HttpClient.Version.HTTP_2)
+                .connectTimeout(Duration.ofSeconds(10))
+                .build();
 
-        try {
-            String encodedAddress = URLEncoder.encode(address, StandardCharsets.UTF_8);
-            URL url = new URI("https://geocode-maps.yandex.ru/v1/?apikey=%s&geocode=%s&format=json"
-                    .formatted(apiKey, encodedAddress)).toURL();
+        String address = URLEncoder.encode(placeName, StandardCharsets.UTF_8);
+        String url = "https://geocode-maps.yandex.ru/1.x?geocode=" + address + "&format=json&apikey=" + apiKey;
 
-            URLConnection urlConnection = url.openConnection();
+        HttpResponse<String> response = getResponse(client, url);
 
-            inputStream = urlConnection.getInputStream();
-            reader = new BufferedReader(new InputStreamReader(inputStream));
-
-            StringBuilder result = new StringBuilder();
-
-            String line;
-            while ((line = reader.readLine()) != null) {
-                result.append(line).append("\n");
-            }
-
-            return result.toString();
-        } catch (Exception e) {
-            log.error("Exception occurred: %s".formatted(e.toString()));
-        } finally {
-            if (inputStream !=  null)
-                inputStream.close();
-
-            if (reader != null)
-                reader.close();
+        if (response.statusCode() != 200) {
+            return new CoordinatesResponse(false, response.body());
         }
 
-        return null;
+        String json = response.body();
+        ObjectMapper mapper = new ObjectMapper();
+        YandexGeocodeResponse yandexGeocodeResponse = mapper.readValue(json, YandexGeocodeResponse.class);
+
+        if (!checkYandexGeocodeResponse(yandexGeocodeResponse))
+            return new CoordinatesResponse(false, "Failed to get coordinated from request");
+
+        FeatureMember member = yandexGeocodeResponse.response().geoObjectCollection().featureMember()[0];
+        if (checkGeoObject(member)) {
+            String[] coords = member.geoObject().point().position().split(" ");
+
+            if (coords.length == 2) {
+                float lat = Float.parseFloat(coords[1]);
+                float lon = Float.parseFloat(coords[0]);
+
+                return new CoordinatesResponse(true, null, lat, lon);
+            }
+
+            return new CoordinatesResponse(false, "Coordinates array shorter than 2. Coords: %s".formatted(Arrays.toString(coords)));
+        }
+
+        return new CoordinatesResponse(false, "Feature member is invalid");
+    }
+
+    private boolean checkGeoObject(@NotNull FeatureMember featureMember) {
+        return featureMember.geoObject() != null && featureMember.geoObject().point() != null;
+    }
+
+    private boolean checkYandexGeocodeResponse(YandexGeocodeResponse yandexGeocodeResponse) {
+        return yandexGeocodeResponse != null &&
+                yandexGeocodeResponse.response() != null &&
+                yandexGeocodeResponse.response().geoObjectCollection() != null &&
+                yandexGeocodeResponse.response().geoObjectCollection().featureMember() != null &&
+                yandexGeocodeResponse.response().geoObjectCollection().featureMember().length > 0;
+    }
+
+    private HttpResponse<String> getResponse(@NotNull HttpClient client, String url) throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("Accept", "application/json")
+                .GET()
+                .build();
+
+        return client.send(request, HttpResponse.BodyHandlers.ofString());
     }
 }
