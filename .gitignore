@@ -5,6 +5,7 @@ build/
 !**/src/test/**/build/
 !**/src/main/resources/db/users.db
 
+
 ### IntelliJ IDEA ###
 .idea/modules.xml
 .idea/jarRepositories.xml

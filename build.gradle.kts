@@ -34,3 +34,9 @@ dependencies {
 tasks.test {
     useJUnitPlatform()
 }
+
+tasks.jar {
+    manifest {
+        attributes(mapOf("Main-Class" to "org.ds.Main"))
+    }
+}
