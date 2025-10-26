@@ -25,9 +25,9 @@ public class CommandsProcessor {
     private StartCommand startCommand;
     private ClearCommand clearCommand;
 
-    public CommandsProcessor(MessageSenderService messageSenderService,
-                             KeyboardButtonsCallbacksService keyboardButtonsCallbacksService,
-                             BotStateService botStateService) {
+    public CommandsProcessor(@NotNull MessageSenderService messageSenderService,
+                             @NotNull KeyboardButtonsCallbacksService keyboardButtonsCallbacksService,
+                             @NotNull BotStateService botStateService) {
         this.messageSenderService = messageSenderService;
         this.keyboardButtonsCallbacksService = keyboardButtonsCallbacksService;
         this.botStateService = botStateService;

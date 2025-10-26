@@ -31,8 +31,8 @@ public class BotUpdates implements UpdatesListener {
     private KeyboardButtonsCallbacksService keyboardButtonsCallbacksService;
     private PreparingSteps preparingSteps;
     private MessageSenderService messageSenderService;
-    private final BotBlockedService botBlockedService;
     private MessagesDeleterService messagesDeleterService;
+    private final BotBlockedService botBlockedService;
 
     public BotUpdates(BotBlockedService botBlockedService) {
         this.botBlockedService = botBlockedService;
