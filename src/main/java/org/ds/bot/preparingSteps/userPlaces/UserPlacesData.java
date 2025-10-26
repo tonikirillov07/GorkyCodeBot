@@ -1,4 +1,4 @@
-package org.ds.bot.preparingSteps;
+package org.ds.bot.preparingSteps.userPlaces;
 
 import org.ds.exceptions.InterestsListIsEmpty;
 import org.jetbrains.annotations.Contract;

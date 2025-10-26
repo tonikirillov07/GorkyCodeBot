@@ -5,6 +5,7 @@ import org.ds.bot.preparingSteps.steps.FinishStep;
 import org.ds.bot.preparingSteps.steps.FreeTimeStep;
 import org.ds.bot.preparingSteps.steps.GeopositionStep;
 import org.ds.bot.preparingSteps.steps.InterestsStep;
+import org.ds.bot.preparingSteps.userPlaces.UserPlacesData;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 

@@ -18,7 +18,7 @@ public class AIService {
 
     public String getResponse(@NotNull String prompt) {
         CompletionResponse completionResponse = gigaChatClient.completions(CompletionRequest.builder()
-                .model(ModelName.GIGA_CHAT_MAX)
+                .model(ModelName.GIGA_CHAT_PRO_2)
                 .message(ChatMessage.builder()
                         .content(prompt)
                         .role(ChatMessageRole.USER)

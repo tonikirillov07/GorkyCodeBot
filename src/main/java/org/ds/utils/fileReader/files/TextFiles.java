@@ -10,11 +10,13 @@ public final class TextFiles {
     private static final String INTEREST_STEP_DIRECTORY = STEPS_DIRECTORY + "/interests";
     private static final String FREE_TIME_STEP_DIRECTORY = STEPS_DIRECTORY + "/freeTime";
     private static final String GEOPOSITION_STEP_DIRECTORY = STEPS_DIRECTORY + "/geoposition";
+    private static final String USER_PLACES_STEP_DIRECTORY = STEPS_DIRECTORY + "/userPlaces";
 
     public static final String DATA_COLLECTION_WAS_NOT_COMPLETED_TEXT = FREE_TIME_STEP_DIRECTORY + "/dataCollectingWasntCompleted.txt";
     public static final String FREE_TIME_ACCEPTED_TEXT = FREE_TIME_STEP_DIRECTORY + "/freeTimeAccepted.txt";
     public static final String INTERESTS_ACCEPTED_TEXT = INTEREST_STEP_DIRECTORY + "/interestsAccepted.txt";
     public static final String GEOPOSITION_ACCEPTED_TEXT = GEOPOSITION_STEP_DIRECTORY + "/geopositionAccepted.txt";
+    public static final String USER_PLACES_RESULT_TEXT = USER_PLACES_STEP_DIRECTORY + "/userPlacesResult.txt";
 
     public static final String INTERESTS_PROMPT = PROMPTS_DIRECTORY + "/interests.txt";
     public static final String FREE_TIME_PROMPT = PROMPTS_DIRECTORY + "/freeTime.txt";

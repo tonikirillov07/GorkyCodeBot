@@ -3,10 +3,7 @@ package org.ds.service.message;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.request.*;
-import com.pengrad.telegrambot.request.AnswerCallbackQuery;
-import com.pengrad.telegrambot.request.SendChatAction;
-import com.pengrad.telegrambot.request.SendMessage;
-import com.pengrad.telegrambot.request.SendPhoto;
+import com.pengrad.telegrambot.request.*;
 import com.pengrad.telegrambot.response.SendResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -102,5 +99,18 @@ public class MessageSenderService {
         sendPhoto.setParseMode(ParseMode.HTML);
 
         return telegramBot.execute(sendPhoto);
+    }
+
+    /**
+     * Sends location to user chat
+     * @param chatId chat id
+     * @param latitude location latitude
+     * @param longitude location longitude
+     * @return SendResponse
+     */
+    public SendResponse sendLocation(Long chatId, float latitude, float longitude) {
+        SendLocation sendLocation = new SendLocation(chatId, latitude, longitude);
+
+        return telegramBot.execute(sendLocation);
     }
 }

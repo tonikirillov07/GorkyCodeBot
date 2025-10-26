@@ -3,7 +3,7 @@ package org.ds.bot.preparingSteps.steps;
 import com.pengrad.telegrambot.model.request.ChatAction;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.ds.bot.preparingSteps.UserPlacesData;
+import org.ds.bot.preparingSteps.userPlaces.UserPlacesData;
 import org.ds.bot.preparingSteps.responses.ResponseProcessor;
 import org.ds.bot.preparingSteps.responses.freeTime.FreeTimeResponse;
 import org.ds.bot.states.States;

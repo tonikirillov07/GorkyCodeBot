@@ -4,7 +4,7 @@ import com.pengrad.telegrambot.model.Location;
 import com.pengrad.telegrambot.model.Message;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.ds.bot.preparingSteps.UserPlacesData;
+import org.ds.bot.preparingSteps.userPlaces.UserPlacesData;
 import org.ds.bot.preparingSteps.responses.ResponseProcessor;
 import org.ds.bot.preparingSteps.responses.geoposition.GeopositionResponse;
 import org.ds.bot.states.States;
