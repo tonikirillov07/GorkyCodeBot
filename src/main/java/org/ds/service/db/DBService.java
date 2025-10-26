@@ -33,7 +33,7 @@ public class DBService {
     }
 
     public void updateUser(@NotNull UserEntity user) {
-        executeInTransaction(_ -> {
+        executeInTransaction(session -> {
             UserEntity userToUpdate = getUserByUserId(user.getUserId());
 
             if (userToUpdate == null) {
@@ -45,6 +45,10 @@ public class DBService {
             userToUpdate.setUsingFirstTime(user.getUsingFirstTime());
             userToUpdate.setLastUsingTime(user.getLastUsingTime());
             userToUpdate.setGotResult(user.getGotResult());
+
+            session.merge(userToUpdate);
+
+            log.info("Updated user %d".formatted(user.getUserId()));
         });
     }
 
@@ -57,16 +61,6 @@ public class DBService {
         });
     }
 
-    private void executeInTransaction(@NotNull Consumer<Session> action) {
-        Session session = sessionFactory.openSession();
-        session.beginTransaction();
-
-        action.accept(session);
-
-        session.getTransaction().commit();
-        session.close();
-    }
-
     public void deleteUserByUserId(@NotNull Long userId) {
         if (!existsUserByUserId(userId))
             return;
@@ -77,5 +71,15 @@ public class DBService {
         });
 
         log.info("Deleted user with id %d".formatted(userId));
+    }
+
+    private void executeInTransaction(@NotNull Consumer<Session> action) {
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+
+        action.accept(session);
+
+        session.getTransaction().commit();
+        session.close();
     }
 }
