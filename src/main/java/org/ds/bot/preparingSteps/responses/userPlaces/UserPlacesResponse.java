@@ -1,8 +1,11 @@
 package org.ds.bot.preparingSteps.responses.userPlaces;
 
+import com.pengrad.telegrambot.model.request.ChatAction;
 import org.ds.bot.inlineKeyboard.KeyboardButton;
 import org.ds.bot.preparingSteps.responses.Response;
 import org.ds.bot.preparingSteps.userPlaces.UserPlace;
+import org.ds.maps.CoordinatesResponse;
+import org.ds.service.maps.MapsService;
 import org.ds.service.message.KeyboardButtonsCallbacksService;
 import org.ds.utils.fileReader.FileReader;
 import org.ds.utils.fileReader.files.TextFiles;
@@ -18,7 +21,8 @@ public class UserPlacesResponse extends Response {
     }
 
     public KeyboardButton[] getPlacesButtons(@NotNull Long chatId,
-                                             @NotNull KeyboardButtonsCallbacksService keyboardButtonsCallbacksService) {
+                                             @NotNull KeyboardButtonsCallbacksService keyboardButtonsCallbacksService,
+                                             @NotNull MapsService mapsService) {
         KeyboardButton[] keyboardButtons = new KeyboardButton[places.length];
 
         for (int i = 0; i < places.length; i++) {
@@ -27,8 +31,18 @@ public class UserPlacesResponse extends Response {
             KeyboardButton keyboardButton = KeyboardButton.of(
                     userPlace.name(),
                     "user_place_location_" + i,
-                    messageSenderService ->
-                            messageSenderService.sendLocation(chatId, userPlace.lat(), userPlace.lon())
+                    messageSenderService -> {
+                        messageSenderService.sendChatAction(chatId, ChatAction.typing);
+
+                        CoordinatesResponse coordinatesResponse = mapsService.getCoordinatesByAddress(FileReader.read(TextFiles.ADDRESS_TEXT)
+                                .formatted(userPlace.name()));
+
+                        if (coordinatesResponse.isCorrect())
+                            messageSenderService.sendLocation(chatId, coordinatesResponse.getLat(), coordinatesResponse.getLon());
+                        else
+                            messageSenderService.sendTextMessage(chatId, FileReader.read(TextFiles.FAILED_TO_GET_POSITION_TEXT)
+                                    .formatted(userPlace.name(), coordinatesResponse.getDescription()));
+                    }
             ).addToCallbacksProcessor(keyboardButtonsCallbacksService);
             keyboardButtons[i] = keyboardButton;
         }
