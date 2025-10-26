@@ -38,8 +38,7 @@ public class CommandsProcessor {
             throw new IllegalArgumentException("Message %s isn't command".formatted(commandData.command()));
 
         if (botStateService.getCurrentState() != States.NONE) {
-            if (!commandData.isIgnoreInterruptConfirmation())
-                confirmInterrupt(commandData);
+            confirmInterrupt(commandData);
             return;
         }
 
