@@ -35,11 +35,12 @@ public class StartCommand extends AbstractCommand {
     public void execute(@NotNull CommandData commandData) {
         super.execute(commandData);
 
+        botStateService().changeCurrentState(States.REQUIRES_INTERESTS);
         UserRegistrationResponse userRegistrationResponse = checkUserRegistration(commandData.userId());
 
         if (!userRegistrationResponse.usingFirstTime() && userRegistrationResponse.isGotResult())
         messageSenderService().sendTextMessage(commandData.chatId(), FileReader.read(TextFiles.WELCOME_2_TEXT));
-        else if (!userRegistrationResponse.usingFirstTime() && !userRegistrationResponse.isGotResult())
+        else if (!userRegistrationResponse.usingFirstTime())
             messageSenderService().sendTextMessage(commandData.chatId(), FileReader.read(TextFiles.WELCOME_3_TEXT));
         else {
             if (messageSenderService().sendPhotoMessage(commandData.chatId(), PhotoFiles.MAIN_PHOTO,
@@ -53,8 +54,6 @@ public class StartCommand extends AbstractCommand {
                 dBService.updateUser(user);
             }
         }
-
-        botStateService().changeCurrentState(States.REQUIRES_INTERESTS);
     }
 
     private @NotNull UserRegistrationResponse checkUserRegistration(Long userId) {

@@ -60,10 +60,10 @@ public class GeopositionStep {
                         botStateService.changeCurrentState(States.NONE);
                     },
                     description -> {
-                        messageSenderService.sendTextMessage(chatId, description);
-                        returnValue.set(false);
-
                         botStateService.changeCurrentState(States.REQUIRES_GEOPOSITION);
+                        messageSenderService.sendTextMessage(chatId, description);
+
+                        returnValue.set(false);
                     }
             );
         } else {

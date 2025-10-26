@@ -45,12 +45,12 @@ public class FreeTimeStep {
                     FreeTimeResponse freeTimeResponse = (FreeTimeResponse) response;
                     userPlacesData.setFreeTime(freeTimeResponse.getFreeTime());
 
-                    messageSenderService.sendTextMessage(chatId, FileReader.read(TextFiles.FREE_TIME_ACCEPTED_TEXT));
                     botStateService.changeCurrentState(States.REQUIRES_GEOPOSITION);
+                    messageSenderService.sendTextMessage(chatId, FileReader.read(TextFiles.FREE_TIME_ACCEPTED_TEXT));
                 },
                 description -> {
-                    messageSenderService.sendTextMessage(chatId, description);
                     botStateService.changeCurrentState(States.REQUIRES_FREE_TIME);
+                    messageSenderService.sendTextMessage(chatId, description);
                 }
         );
 

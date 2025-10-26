@@ -19,7 +19,7 @@ dependencies {
 
     implementation("org.hibernate.orm:hibernate-community-dialects:7.2.0.CR1")
     implementation("org.hibernate.orm:hibernate-core:7.2.0.CR1")
-    implementation("org.xerial:sqlite-jdbc:3.50.3.0")
+    implementation("com.mysql:mysql-connector-j:9.4.0")
 
     implementation("org.jetbrains:annotations:26.0.2-1")
 

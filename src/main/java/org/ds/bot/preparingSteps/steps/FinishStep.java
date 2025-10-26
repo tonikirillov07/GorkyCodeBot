@@ -56,11 +56,10 @@ public class FinishStep {
                             userPlacesData.getGeoposition()
                     );
 
-            messageSenderService.sendTextMessage(chatId, aIService.getResponse(prompt));
-
             updateUser(userId);
-
             botStateService.changeCurrentState(States.NONE);
+
+            messageSenderService.sendTextMessage(chatId, aIService.getResponse(prompt));
         } else
             messageSenderService.sendTextMessage(chatId, FileReader.read(TextFiles.DATA_COLLECTION_WAS_NOT_COMPLETED_TEXT)
                     .formatted(userPlacesData.getNotCompletedData()));

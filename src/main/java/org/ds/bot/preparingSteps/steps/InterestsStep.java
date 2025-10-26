@@ -45,12 +45,12 @@ public class InterestsStep {
                     InterestResponse interestResponse = (InterestResponse) response;
                     userPlacesData.setInterests(interestResponse.getInterests());
 
-                    messageSenderService.sendTextMessage(chatId, FileReader.read(TextFiles.INTERESTS_ACCEPTED_TEXT));
                     botStateService.changeCurrentState(States.REQUIRES_FREE_TIME);
+                    messageSenderService.sendTextMessage(chatId, FileReader.read(TextFiles.INTERESTS_ACCEPTED_TEXT));
                 },
                 description -> {
-                    messageSenderService.sendTextMessage(chatId, description);
                     botStateService.changeCurrentState(States.REQUIRES_INTERESTS);
+                    messageSenderService.sendTextMessage(chatId, description);
                 }
         );
 
