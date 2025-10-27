@@ -4,6 +4,7 @@ import com.pengrad.telegrambot.model.Location;
 import com.pengrad.telegrambot.model.Message;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.ds.bot.preparingSteps.responses.geoposition.LatLonCheckResponse;
 import org.ds.bot.preparingSteps.steps.processingResults.GeopositionProcessingResult;
 import org.ds.bot.preparingSteps.userPlaces.UserPlacesData;
 import org.ds.bot.preparingSteps.responses.ResponseProcessor;
@@ -16,7 +17,6 @@ import org.ds.utils.fileReader.files.TextFiles;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Component
@@ -70,10 +70,21 @@ public class GeopositionStep {
         } else {
             currentLocation.set("lat: %f, lon: %f".formatted(location.latitude(), location.longitude()));
 
-            applyGeoposition(currentLocation.get(), userPlacesData);
-            geopositionProcessingResult.setHasGeoposition(true);
+            responseProcessor.processResponse(
+                    FileReader.read(TextFiles.LAT_LON_CHECK_PROMPT).formatted(currentLocation.get()),
+                    LatLonCheckResponse.class,
+                    _ -> {
+                        applyGeoposition(currentLocation.get(), userPlacesData);
+                        geopositionProcessingResult.setHasGeoposition(true);
 
-            botStateService.changeCurrentState(States.NONE);
+                        botStateService.changeCurrentState(States.NONE);
+                    },
+                    description -> {
+                        messageSenderService.sendTextMessage(chatId, description);
+                        geopositionProcessingResult.setHasGeoposition(false);
+                    }
+
+            );
         }
 
         return geopositionProcessingResult;

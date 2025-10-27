@@ -25,6 +25,7 @@ public final class TextFiles {
     public static final String INTERESTS_PROMPT = PROMPTS_DIRECTORY + "/interests.txt";
     public static final String FREE_TIME_PROMPT = PROMPTS_DIRECTORY + "/freeTime.txt";
     public static final String GEOPOSITION_PROMPT = PROMPTS_DIRECTORY + "/geoposition.txt";
+    public static final String LAT_LON_CHECK_PROMPT = PROMPTS_DIRECTORY + "/latLonCheck.txt";
     public static final String USER_PLACES_PROMPT = PROMPTS_DIRECTORY + "/userPlaces.txt";
 
     public static final String WELCOME_TEXT = START_COMMAND_DIRECTORY + "/welcome.txt";
