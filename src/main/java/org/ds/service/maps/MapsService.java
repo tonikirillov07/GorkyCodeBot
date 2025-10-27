@@ -2,6 +2,8 @@ package org.ds.service.maps;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.ds.exceptions.GettingResponseException;
 import org.ds.exceptions.JSONProcessingException;
 import org.ds.maps.CoordinatesResponse;
@@ -23,6 +25,7 @@ import java.util.Arrays;
 
 @Service
 public class MapsService {
+    private static final Log log = LogFactory.getLog(MapsService.class);
     private final String apiKey;
 
     public MapsService(@Qualifier("mapsAPIKey") String apiKey) {
@@ -30,6 +33,8 @@ public class MapsService {
     }
 
     public @NotNull CoordinatesResponse getCoordinatesByAddress(@NotNull String placeName) {
+        log.info("Finding coordinates for address: %s".formatted(placeName));
+
         HttpClient client = HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_2)
                 .connectTimeout(Duration.ofSeconds(10))
@@ -61,7 +66,7 @@ public class MapsService {
         if (!checkYandexGeocodeResponse(yandexGeocodeResponse))
             return new CoordinatesResponse(false, "Failed to get coordinates from request");
 
-        FeatureMember member = yandexGeocodeResponse.response.GeoObjectCollection.featureMember[0];
+        FeatureMember member = yandexGeocodeResponse.response.GeoObjectCollection.featureMember[yandexGeocodeResponse.response.GeoObjectCollection.featureMember.length - 1];
         if (checkGeoObject(member)) {
             String[] coords = member.GeoObject.Point.pos.split(" ");
 

@@ -14,7 +14,7 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
-    @Column(name = "userId", nullable = false, unique = true)
+    @Column(name = "userId", nullable = false, unique = true, updatable = false)
     private Long userId;
     @Column(name = "usingFirstTime", nullable = false)
     @ColumnDefault(value = "true")

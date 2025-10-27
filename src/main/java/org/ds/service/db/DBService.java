@@ -11,6 +11,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.function.Consumer;
 
+/**
+ * Provides CRUD operations over user data
+ */
 @Service
 public class DBService {
     private static final Log log = LogFactory.getLog(DBService.class);
@@ -20,10 +23,20 @@ public class DBService {
         this.sessionFactory = sessionFactory;
     }
 
+    /**
+     * Check is user with <b>userId</b> exists in database
+     * @param userId user id in telegram
+     * @return true - if exists, false - if not exists
+     */
     public Boolean existsUserByUserId(@NotNull Long userId) {
         return getUserByUserId(userId) != null;
     }
 
+    /**
+     * Finding UserEntity by userId.
+     * @param userId user id in telegram
+     * @return UserEntity or null if user with such <b>userId</b> was not found
+     */
     public @Nullable UserEntity getUserByUserId(@NotNull Long userId) {
         Session session = sessionFactory.openSession();
 
@@ -32,6 +45,10 @@ public class DBService {
                 .getSingleResultOrNull();
     }
 
+    /**
+     * Updating user
+     * @param user user with updating data. <b>userId cannot be change</b>
+     */
     public void updateUser(@NotNull UserEntity user) {
         executeInTransaction(session -> {
             UserEntity userToUpdate = getUserByUserId(user.getUserId());
@@ -41,7 +58,6 @@ public class DBService {
                 return;
             }
 
-            userToUpdate.setUserId(user.getUserId());
             userToUpdate.setUsingFirstTime(user.getUsingFirstTime());
             userToUpdate.setLastUsingTime(user.getLastUsingTime());
             userToUpdate.setGotResult(user.getGotResult());
@@ -52,6 +68,10 @@ public class DBService {
         });
     }
 
+    /**
+     * Adds new UserEntity into database
+     * @param user user to add
+     */
     public void addUser(@NotNull UserEntity user) {
         executeInTransaction(session -> {
             UserEntity userEntity = UserEntity.of(user);
@@ -61,6 +81,10 @@ public class DBService {
         });
     }
 
+    /**
+     *
+     * @param userId
+     */
     public void deleteUserByUserId(@NotNull Long userId) {
         if (!existsUserByUserId(userId))
             return;
