@@ -4,6 +4,7 @@ import com.pengrad.telegrambot.model.Location;
 import com.pengrad.telegrambot.model.Message;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.ds.bot.preparingSteps.steps.processingResults.GeopositionProcessingResult;
 import org.ds.bot.preparingSteps.userPlaces.UserPlacesData;
 import org.ds.bot.preparingSteps.responses.ResponseProcessor;
 import org.ds.bot.preparingSteps.responses.geoposition.GeopositionResponse;
@@ -31,15 +32,15 @@ public class GeopositionStep {
         this.responseProcessor = responseProcessor;
     }
 
-    public boolean tryProcessGeoposition(@NotNull Long chatId,
-                                         @NotNull Message message,
-                                         @NotNull UserPlacesData userPlacesData) {
+    public GeopositionProcessingResult tryProcessGeoposition(@NotNull Long chatId,
+                                                             @NotNull Message message,
+                                                             @NotNull UserPlacesData userPlacesData) {
         log.info("Processing geoposition...");
 
         if (botStateService.getCurrentState() != States.REQUIRES_GEOPOSITION)
-            return false;
+            return GeopositionProcessingResult.of(false, false);
 
-        AtomicBoolean returnValue = new AtomicBoolean(true);
+        GeopositionProcessingResult geopositionProcessingResult = GeopositionProcessingResult.of(true, true);
 
         AtomicReference<String> currentLocation = new AtomicReference<>();
         Location location = message.location();
@@ -55,7 +56,7 @@ public class GeopositionStep {
                         currentLocation.set(geopositionResponse.getUserLocation());
 
                         applyGeoposition(currentLocation.get(), userPlacesData);
-                        returnValue.set(true);
+                        geopositionProcessingResult.setHasGeoposition(true);
 
                         botStateService.changeCurrentState(States.NONE);
                     },
@@ -63,19 +64,19 @@ public class GeopositionStep {
                         botStateService.changeCurrentState(States.REQUIRES_GEOPOSITION);
                         messageSenderService.sendTextMessage(chatId, description);
 
-                        returnValue.set(false);
+                        geopositionProcessingResult.setHasGeoposition(false);
                     }
             );
         } else {
             currentLocation.set("lat: %f, lon: %f".formatted(location.latitude(), location.longitude()));
 
             applyGeoposition(currentLocation.get(), userPlacesData);
-            returnValue.set(true);
+            geopositionProcessingResult.setHasGeoposition(true);
 
             botStateService.changeCurrentState(States.NONE);
         }
 
-        return returnValue.get();
+        return geopositionProcessingResult;
     }
 
     private void applyGeoposition(@NotNull String currentLocation,

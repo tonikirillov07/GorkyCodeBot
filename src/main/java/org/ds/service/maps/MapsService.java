@@ -1,11 +1,12 @@
 package org.ds.service.maps;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.ds.exceptions.GettingResponseException;
 import org.ds.exceptions.JSONProcessingException;
 import org.ds.maps.CoordinatesResponse;
+import org.ds.maps.FeatureMember;
+import org.ds.maps.YandexGeocodeResponse;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -97,35 +98,5 @@ public class MapsService {
                 .build();
 
         return client.send(request, HttpResponse.BodyHandlers.ofString());
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    static class YandexGeocodeResponse {
-        public Response response;
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    static class Response {
-        public GeoObjectCollection GeoObjectCollection;
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    static class GeoObjectCollection {
-        public FeatureMember[] featureMember;
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    static class FeatureMember {
-        public GeoObject GeoObject;
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    static class GeoObject {
-        public Point Point;
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    static class Point {
-        public String pos;
     }
 }

@@ -126,12 +126,22 @@ public class MessageSenderService {
     /**
      * Sends location to user chat
      * @param chatId chat id
+     * @param caption caption for location
      * @param latitude location latitude
      * @param longitude location longitude
      * @return SendResponse
      */
-    public SendResponse sendLocation(Long chatId, float latitude, float longitude) {
+    public SendResponse sendLocation(@NotNull Long chatId,
+                                     @NotNull String caption,
+                                     float latitude,
+                                     float longitude) {
+        SendMessage captionMessage = new SendMessage(chatId, caption);
+        captionMessage.parseMode(ParseMode.HTML);
+
+        SendResponse sendResponse = telegramBot.execute(captionMessage);
+
         SendLocation sendLocation = new SendLocation(chatId, latitude, longitude);
+        sendLocation.setReplyParameters(new ReplyParameters(sendResponse.message().messageId()));
 
         return telegramBot.execute(sendLocation);
     }

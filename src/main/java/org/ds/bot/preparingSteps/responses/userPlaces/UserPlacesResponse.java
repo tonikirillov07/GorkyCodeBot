@@ -38,7 +38,12 @@ public class UserPlacesResponse extends Response {
                                 .formatted(userPlace.name()));
 
                         if (coordinatesResponse.isCorrect())
-                            messageSenderService.sendLocation(chatId, coordinatesResponse.getLat(), coordinatesResponse.getLon());
+                            messageSenderService.sendLocation(
+                                    chatId,
+                                    userPlace.name(),
+                                    coordinatesResponse.getLat(),
+                                    coordinatesResponse.getLon()
+                            );
                         else
                             messageSenderService.sendTextMessage(chatId, FileReader.read(TextFiles.FAILED_TO_GET_POSITION_TEXT)
                                     .formatted(userPlace.name(), coordinatesResponse.getDescription()));

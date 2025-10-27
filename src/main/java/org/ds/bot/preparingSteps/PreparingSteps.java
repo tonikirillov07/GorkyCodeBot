@@ -5,6 +5,7 @@ import org.ds.bot.preparingSteps.steps.FinishStep;
 import org.ds.bot.preparingSteps.steps.FreeTimeStep;
 import org.ds.bot.preparingSteps.steps.GeopositionStep;
 import org.ds.bot.preparingSteps.steps.InterestsStep;
+import org.ds.bot.preparingSteps.steps.processingResults.GeopositionProcessingResult;
 import org.ds.bot.preparingSteps.userPlaces.UserPlacesData;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
@@ -36,12 +37,13 @@ public class PreparingSteps {
         if (freeTimeStep.tryProcessFreeTime(chatId, messageText, userPlacesData))
             return true;
 
-        if (geopositionStep.tryProcessGeoposition(chatId, message, userPlacesData)) {
+        GeopositionProcessingResult geopositionProcessingResult = geopositionStep.tryProcessGeoposition(chatId, message, userPlacesData);
+        if (geopositionProcessingResult.getProcessed() && geopositionProcessingResult.getHasGeoposition()) {
             finishStep.processFinish(chatId, message.from().id(), userPlacesData);
 
             return true;
         }
 
-        return false;
+        return geopositionProcessingResult.getProcessed() && !geopositionProcessingResult.getHasGeoposition();
     }
 }

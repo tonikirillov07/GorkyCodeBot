@@ -26,4 +26,12 @@ public class CoordinatesResponse extends Response {
     public float getLon() {
         return lon;
     }
+
+    @Override
+    public String toString() {
+        return "CoordinatesResponse{" +
+                "lat=" + lat +
+                ", lon=" + lon +
+                '}';
+    }
 }

@@ -28,7 +28,7 @@ dependencies {
     implementation("com.github.pengrad:java-telegram-bot-api:9.2.0")
     implementation("chat.giga:gigachat-java:0.1.10")
 
-    testImplementation("org.springframework:spring-test:7.0.0-RC2")
+    testImplementation("org.springframework.boot:spring-boot-starter-test:4.0.0-RC1")
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
