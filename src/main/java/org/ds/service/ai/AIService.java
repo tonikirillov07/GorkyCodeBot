@@ -16,9 +16,14 @@ public class AIService {
         this.gigaChatClient = gigaChatClient;
     }
 
+    /**
+     * Returns AI response by prompt
+     * @param prompt - prompt
+     * @return response based on prompt
+     */
     public String getResponse(@NotNull String prompt) {
         CompletionResponse completionResponse = gigaChatClient.completions(CompletionRequest.builder()
-                .model(ModelName.GIGA_CHAT_PRO_2)
+                .model(ModelName.GIGA_CHAT)
                 .message(ChatMessage.builder()
                         .content(prompt)
                         .role(ChatMessageRole.USER)
