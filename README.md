@@ -4,3 +4,5 @@
 <b>API Yandex Maps</b> для посика найденных мест на карте
 
 <i>Ссылка на бота:</i> @darkness_gorky_code_bot
+
+<img width="611" height="1692" alt="screen" src="https://github.com/user-attachments/assets/14e8cd9f-45a1-427e-b585-78985cdb08c0" />
