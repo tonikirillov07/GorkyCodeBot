@@ -1,5 +1,6 @@
 package org.ds.bot.preparingSteps.steps.processingResults;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 public class GeopositionProcessingResult {
@@ -12,8 +13,9 @@ public class GeopositionProcessingResult {
         this.hasGeoposition = hasGeoposition;
     }
 
-    public static GeopositionProcessingResult of(@NotNull Boolean isProcessed,
-                                                 @NotNull Boolean hasGeoposition) {
+    @Contract(value = "_, _ -> new", pure = true)
+    public static @NotNull GeopositionProcessingResult of(@NotNull Boolean isProcessed,
+                                                          @NotNull Boolean hasGeoposition) {
         return new GeopositionProcessingResult(isProcessed, hasGeoposition);
     }
 
