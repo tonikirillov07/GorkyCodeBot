@@ -46,11 +46,11 @@ public class BotUpdates implements UpdatesListener {
     }
 
     private void processUpdate(@NotNull Update update) {
-        if (update.callbackQuery() != null)
-            keyboardButtonsCallbacksService.processCallbacks(update.callbackQuery());
-
         if (botBlockedService.tryProcessBlock(update))
             return;
+
+        if (update.callbackQuery() != null)
+            keyboardButtonsCallbacksService.processCallbacks(update.callbackQuery());
 
         Message message = update.message();
         if (message == null)

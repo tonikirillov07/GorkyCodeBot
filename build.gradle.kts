@@ -26,8 +26,6 @@ dependencies {
     implementation("org.jetbrains:annotations:26.0.2-1")
 
     implementation("com.github.pengrad:java-telegram-bot-api:9.2.0")
-
-    implementation("com.openai:openai-java:4.6.1")
     implementation("chat.giga:gigachat-java:0.1.10")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test:4.0.0-RC1")

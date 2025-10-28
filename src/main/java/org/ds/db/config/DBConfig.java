@@ -33,6 +33,5 @@ public class DBConfig {
                 .setProperty("hibernate.hbm2ddl.auto", "update");
 
         return configuration.buildSessionFactory();
-
     }
 }

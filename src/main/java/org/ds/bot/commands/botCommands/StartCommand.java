@@ -38,8 +38,15 @@ public class StartCommand extends AbstractCommand {
         botStateService().changeCurrentState(States.REQUIRES_INTERESTS);
         UserRegistrationResponse userRegistrationResponse = checkUserRegistration(commandData.userId());
 
+        LocalDateTime lastUsingTime = userRegistrationResponse.lastUsingTime();
+
+        if (!userRegistrationResponse.usingFirstTime() && Utils.getDifferenceBetweenDatesInHours(LocalDateTime.now(), lastUsingTime) >= botInfo.sayHelloInterval()) {
+            messageSenderService().sendTextMessage(commandData.chatId(), FileReader.read(TextFiles.WELCOME_4_TEXT));
+            return;
+        }
+
         if (!userRegistrationResponse.usingFirstTime() && userRegistrationResponse.isGotResult())
-        messageSenderService().sendTextMessage(commandData.chatId(), FileReader.read(TextFiles.WELCOME_2_TEXT));
+            messageSenderService().sendTextMessage(commandData.chatId(), FileReader.read(TextFiles.WELCOME_2_TEXT));
         else if (!userRegistrationResponse.usingFirstTime())
             messageSenderService().sendTextMessage(commandData.chatId(), FileReader.read(TextFiles.WELCOME_3_TEXT));
         else {
@@ -58,6 +65,7 @@ public class StartCommand extends AbstractCommand {
 
     private @NotNull UserRegistrationResponse checkUserRegistration(Long userId) {
         boolean usingFirstTime, gotResult;
+        LocalDateTime lastUsingTime = null;
 
         if (dBService.existsUserByUserId(userId)) {
             UserEntity user = dBService.getUserByUserId(userId);
@@ -68,6 +76,7 @@ public class StartCommand extends AbstractCommand {
                     Utils.getDifferenceBetweenDatesInHours(user.getLastUsingTime(), LocalDateTime.now()) >= botInfo.sayHelloInterval();
 
             gotResult = user.getGotResult();
+            lastUsingTime = user.getLastUsingTime();
 
             UserEntity userToUpdate = UserEntity.of(user);
             userToUpdate.setLastUsingTime(LocalDateTime.now());
@@ -76,10 +85,11 @@ public class StartCommand extends AbstractCommand {
         } else {
             usingFirstTime = true;
             gotResult = false;
+            lastUsingTime = LocalDateTime.now();
 
-            dBService.addUser(UserEntity.of(userId, true, false, LocalDateTime.now()));
+            dBService.addUser(UserEntity.of(userId, true, false, lastUsingTime));
         }
 
-        return UserRegistrationResponse.of(usingFirstTime, gotResult);
+        return UserRegistrationResponse.of(usingFirstTime, gotResult, lastUsingTime);
     }
 }
