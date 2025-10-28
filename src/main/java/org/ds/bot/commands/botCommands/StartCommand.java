@@ -40,7 +40,7 @@ public class StartCommand extends AbstractCommand {
 
         LocalDateTime lastUsingTime = userRegistrationResponse.lastUsingTime();
 
-        if (!userRegistrationResponse.usingFirstTime() && Utils.getDifferenceBetweenDatesInHours(LocalDateTime.now(), lastUsingTime) >= botInfo.sayHelloInterval()) {
+        if (!userRegistrationResponse.usingFirstTime() && Utils.getDifferenceBetweenDatesInHours(lastUsingTime, LocalDateTime.now()) >= botInfo.sayHelloInterval()) {
             messageSenderService().sendTextMessage(commandData.chatId(), FileReader.read(TextFiles.WELCOME_4_TEXT));
             return;
         }
