@@ -17,7 +17,10 @@ public class Keyboards {
                                           @NotNull Consumer<MessageSenderService> onConfirm,
                                           @NotNull Consumer<MessageSenderService> onCancel) {
         KeyboardButton confirmButton = KeyboardButton.of("Да", "confirm_action", onConfirm);
-        KeyboardButton cancelButton = KeyboardButton.of("Нет", "cancel_action", onCancel);
+        KeyboardButton cancelButton = KeyboardButton.of("Нет", "cancel_action", _ -> {
+            botStateService.getBackToPreviousState();
+            onCancel.accept(messageSenderService);
+        });
 
         KeyboardButtonGroup keyboardButtonGroup = KeyboardButtonGroup.of(confirmButton, cancelButton).addToCallbacksProcessor(keyboardButtonsCallbacksService);
 

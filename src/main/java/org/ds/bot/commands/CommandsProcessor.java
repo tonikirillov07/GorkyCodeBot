@@ -47,8 +47,8 @@ public class CommandsProcessor {
 
     private void confirmInterrupt(@NotNull CommandData commandData) {
         Consumer<MessageSenderService> onConfirm = _ -> executeCommand(commandData);
-        Consumer<MessageSenderService> onCancel = _ ->
-                messageSenderService.sendTextMessage(commandData.chatId(), FileReader.read(TextFiles.COMMAND_CANCELED_TEXT));
+        Consumer<MessageSenderService> onCancel = _ -> messageSenderService.sendTextMessage(commandData.chatId(), FileReader.read(TextFiles.COMMAND_CANCELED_TEXT));
+
 
         Keyboards.createConfirmation(
                 commandData.chatId(),
