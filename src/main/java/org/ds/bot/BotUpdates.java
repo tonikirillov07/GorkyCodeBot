@@ -61,7 +61,8 @@ public class BotUpdates implements UpdatesListener {
         String username = Utils.getUsername(message.from());
         Long userId = message.from().id();
 
-        if (botStateService.getCurrentState() == States.GENERATING_THOUGHTS) {
+        if (botStateService.getCurrentState() == States.GENERATING_THOUGHTS
+                || botStateService.getCurrentState() == States.REQUIRES_INTERRUPTION_CONFIRMATION) {
             messagesDeleterService.deleteMessage(chatId, message.messageId());
             return;
         }

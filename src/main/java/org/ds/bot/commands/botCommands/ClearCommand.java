@@ -46,6 +46,7 @@ public class ClearCommand extends AbstractCommand {
                 commandData.chatId(),
                 FileReader.read(TextFiles.CLEAR_TEXT),
                 messageSenderService(),
+                botStateService(),
                 keyboardButtonsCallbacksService(),
                 onConfirm,
                 onCancel

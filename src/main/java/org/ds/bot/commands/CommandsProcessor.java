@@ -54,6 +54,7 @@ public class CommandsProcessor {
                 commandData.chatId(),
                 FileReader.read(TextFiles.COMMAND_CONFIRMATION_TEXT),
                 messageSenderService,
+                botStateService,
                 keyboardButtonsCallbacksService,
                 onConfirm,
                 onCancel
