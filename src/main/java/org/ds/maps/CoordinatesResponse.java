@@ -4,6 +4,9 @@ import org.ds.bot.preparingSteps.responses.Response;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Response, that contains <b>lat & lon</b> coordinates of a place
+ */
 public class CoordinatesResponse extends Response {
     private final float lat, lon;
 
