@@ -1,5 +1,7 @@
 package org.ds.bot.commands.botCommands;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.ds.bot.BotInfo;
 import org.ds.bot.commands.AbstractCommand;
 import org.ds.bot.commands.CommandData;
@@ -22,6 +24,7 @@ import java.time.LocalDateTime;
 
 @Component
 public class StartCommand extends AbstractCommand {
+    private static final Log log = LogFactory.getLog(StartCommand.class);
     private final DBService dBService;
     private final BotInfo botInfo;
 
@@ -59,7 +62,8 @@ public class StartCommand extends AbstractCommand {
                 user.setUsingFirstTime(false);
 
                 dBService.updateUser(user);
-            }
+            } else
+                log.error("Failed to add user %s into database because of sending message error".formatted(commandData.username()));
         }
     }
 
