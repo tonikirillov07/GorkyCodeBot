@@ -6,6 +6,10 @@ import org.ds.bot.states.States;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
+/**
+ * Controls bot states
+ */
+
 @Service
 public class BotStateService {
     private static final Log log = LogFactory.getLog(BotStateService.class);
@@ -16,10 +20,17 @@ public class BotStateService {
         this.previousState = currentState;
     }
 
+    /**
+     * Sets previous bot state
+     */
     public void getBackToPreviousState() {
         changeCurrentState(getPreviousState());
     }
 
+    /**
+     * Sets current bot state
+     * @param currentState - state to be set
+     */
     public void changeCurrentState(@NotNull States currentState) {
         this.previousState = getCurrentState();
         this.currentState = currentState;
